@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Name — Portfolio</title>
+  <meta name="description" content="Portfolio of Your Name. Scroll into the machine.">
+  <meta name="theme-color" content="#0b0b0f">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="locked">
+
+<!-- =========================================================
+     1. GATE — the "enter with sound" screen
+     ========================================================= -->
+<section class="gate" id="gate">
+  <header class="bar">
+    <span>SYS-001</span>
+    <span>BOOT A / BOOT B</span>
+    <span>© 2026</span>
+  </header>
+
+  <div class="gate-inner">
+    <div class="mini-pc" aria-hidden="true">
+      <div class="mini-body"><div class="mini-screen"><span class="mini-prompt">&gt;</span><span class="mini-cursor"></span></div></div>
+      <div class="mini-neck"></div>
+      <div class="mini-base"></div>
+    </div>
+
+    <!-- EDIT: your name -->
+    <h1 class="gate-title">
+      <span class="ln"><span>YOUR</span></span>
+      <span class="ln"><span>NAME</span></span>
+    </h1>
+
+    <p class="gate-sub">BEST EXPERIENCED WITH SOUND ON</p>
+
+    <div class="gate-actions">
+      <button class="btn-primary" data-enter="sound">POWER ON WITH SOUND&nbsp;&nbsp;♪</button>
+      <button class="btn-link" data-enter="mute">POWER ON WITHOUT SOUND</button>
+    </div>
+
+    <p class="gate-note">SYSTEM IDLE. POWER'S ON WHEN YOU ARE.</p>
+  </div>
+
+  <footer class="gate-foot">DESIGNED &amp; BUILT BY <b>YOUR NAME</b></footer>
+</section>
+
+<!-- =========================================================
+     2. HUD — persistent top / bottom bars
+     ========================================================= -->
+<header class="hud bar" id="hud">
+  <span><span class="sys">SYS-001 · </span><span id="progress">000%</span></span>
+  <span id="chapter">CH.00 — THE ROOM</span>
+  <button class="hud-btn" id="sound-toggle" aria-pressed="false">SOUND ○ OFF</button>
+</header>
+<div class="hud-bottom" id="hud-bottom">
+  <span></span>
+  <span class="hint" id="hint">SCROLL TO ENTER THE MACHINE&nbsp;&nbsp;↓</span>
+</div>
+
+<!-- =========================================================
+     3. THE ROOM — one SVG, the camera zooms into the monitor
+     ========================================================= -->
+<div class="room" id="room" aria-hidden="true">
+<svg class="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3040"/><stop offset="1" stop-color="#22242f"/></linearGradient>
+    <linearGradient id="g-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d2c22"/><stop offset="1" stop-color="#1f160f"/></linearGradient>
+    <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080e24"/><stop offset="1" stop-color="#28366a"/></linearGradient>
+    <linearGradient id="g-beige" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6dec8"/><stop offset="1" stop-color="#b6ad94"/></linearGradient>
+    <linearGradient id="g-desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d573b"/><stop offset="1" stop-color="#5f422d"/></linearGradient>
+    <linearGradient id="g-curtain" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5a2e3c"/><stop offset=".3" stop-color="#7a3f52"/><stop offset=".6" stop-color="#55293a"/><stop offset="1" stop-color="#743c4e"/>
+    </linearGradient>
+    <linearGradient id="g-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#25302a"/><stop offset=".5" stop-color="#0c120f"/><stop offset="1" stop-color="#060908"/></linearGradient>
+    <radialGradient id="g-screen-on" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#114329"/><stop offset="1" stop-color="#03100a"/></radialGradient>
+    <radialGradient id="g-glow"><stop offset="0" stop-color="#7dffad" stop-opacity=".32"/><stop offset=".45" stop-color="#7dffad" stop-opacity=".08"/><stop offset="1" stop-color="#7dffad" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g-warm"><stop offset="0" stop-color="#ffc46b" stop-opacity=".5"/><stop offset=".5" stop-color="#ff9f4a" stop-opacity=".14"/><stop offset="1" stop-color="#ff9f4a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g-bulb"><stop offset="0" stop-color="#fffbe9"/><stop offset=".4" stop-color="#ffe2a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe4ad" stop-opacity=".5"/><stop offset="1" stop-color="#ffd08a" stop-opacity="0"/></linearGradient>
+    <linearGradient id="g-moonbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c8ff" stop-opacity=".09"/><stop offset="1" stop-color="#b9c8ff" stop-opacity="0"/></linearGradient>
+    <pattern id="p-rain" width="60" height="90" patternUnits="userSpaceOnUse">
+      <line x1="12" y1="0" x2="6" y2="24" stroke="#a9bcff" stroke-opacity=".35" stroke-width="1.4"/>
+      <line x1="44" y1="44" x2="38" y2="68" stroke="#a9bcff" stroke-opacity=".25" stroke-width="1.2"/>
+      <line x1="30" y1="20" x2="26" y2="34" stroke="#a9bcff" stroke-opacity=".18" stroke-width="1"/>
+    </pattern>
+    <pattern id="p-scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#000" fill-opacity=".3"/></pattern>
+    <clipPath id="c-window"><rect x="160" y="100" width="320" height="310"/></clipPath>
+    <clipPath id="c-screen"><rect x="680" y="278" width="240" height="180" rx="12"/></clipPath>
+  </defs>
+
+  <!-- wall + floor -->
+  <rect width="1600" height="652" fill="url(#g-wall)"/>
+  <rect y="652" width="1600" height="248" fill="url(#g-floor)"/>
+  <rect y="640" width="1600" height="14" fill="#181920"/>
+  <g stroke="#000" stroke-opacity=".18" stroke-width="2">
+    <line x1="0" y1="700" x2="1600" y2="700"/><line x1="0" y1="762" x2="1600" y2="762"/><line x1="0" y1="836" x2="1600" y2="836"/>
+  </g>
+  <ellipse cx="800" cy="862" rx="560" ry="52" fill="#4c2834"/>
+  <ellipse cx="800" cy="862" rx="520" ry="40" fill="none" stroke="#6b3a4a" stroke-width="3" stroke-dasharray="10 8"/>
+
+  <!-- curtains -->
+  <line x1="88" y1="74" x2="552" y2="74" stroke="#14151b" stroke-width="6" stroke-linecap="round"/>
+  <path d="M96 76 H150 V470 Q130 480 120 468 Q108 480 96 470 Z" fill="url(#g-curtain)"/>
+  <path d="M490 76 H546 V470 Q534 480 522 468 Q510 480 490 470 Z" fill="url(#g-curtain)"/>
+
+  <!-- shelf + books -->
+  <rect x="640" y="170" width="330" height="10" fill="#4e3524"/>
+  <rect x="664" y="180" width="8" height="18" fill="#3a271b"/><rect x="938" y="180" width="8" height="18" fill="#3a271b"/>
+  <rect x="660" y="108" width="18" height="62" fill="#8c3b3b"/>
+  <rect x="680" y="116" width="14" height="54" fill="#3b5c8c"/>
+  <rect x="696" y="100" width="20" height="70" fill="#c9a227"/>
+  <rect x="718" y="112" width="16" height="58" fill="#2f6b4f"/>
+  <rect x="736" y="122" width="12" height="48" fill="#d8d2c0"/>
+  <polygon points="752,170 768,170 800,118 786,112" fill="#6e4a8c"/>
+  <!-- floppy stack -->
+  <rect x="822" y="160" width="46" height="10" fill="#2f2f38"/><rect x="826" y="150" width="46" height="10" fill="#c24a3a"/><rect x="820" y="140" width="46" height="10" fill="#3a63a8"/>
+  <!-- tiny cactus -->
+  <polygon points="904,170 936,170 932,148 908,148" fill="#b5643c"/>
+  <rect x="914" y="112" width="12" height="38" rx="6" fill="#4f8a5b"/><rect x="904" y="124" width="8" height="16" rx="4" fill="#4f8a5b"/>
+
+  <!-- wall clock (hands driven by JS, real time) -->
+  <circle cx="1070" cy="140" r="38" fill="#ece6d6" stroke="#15161c" stroke-width="5"/>
+  <g stroke="#15161c" stroke-width="3">
+    <line x1="1070" y1="108" x2="1070" y2="114"/><line x1="1070" y1="166" x2="1070" y2="172"/>
+    <line x1="1038" y1="140" x2="1044" y2="140"/><line x1="1096" y1="140" x2="1102" y2="140"/>
+  </g>
+  <line id="hand-h" x1="1070" y1="140" x2="1070" y2="121" stroke="#15161c" stroke-width="4" stroke-linecap="round"/>
+  <line id="hand-m" x1="1070" y1="140" x2="1070" y2="112" stroke="#15161c" stroke-width="3" stroke-linecap="round"/>
+  <line id="hand-s" x1="1070" y1="146" x2="1070" y2="110" stroke="#d9472b" stroke-width="1.5"/>
+  <circle cx="1070" cy="140" r="3" fill="#15161c"/>
+
+  <!-- poster -->
+  <rect x="1160" y="90" width="170" height="240" fill="#d94f30"/>
+  <circle cx="1245" cy="172" r="58" fill="#14141a"/>
+  <circle cx="1245" cy="172" r="20" fill="#d94f30"/>
+  <text x="1174" y="282" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="34" fill="#f1ece0" style="font-stretch:125%">NIGHT</text>
+  <text x="1174" y="314" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="34" fill="#f1ece0" style="font-stretch:125%">SHIFT</text>
+  <circle cx="1245" cy="98" r="4" fill="#ddd"/>
+
+  <!-- desk -->
+  <polygon points="300,560 1300,560 1340,612 260,612" fill="url(#g-desk)"/>
+  <rect x="260" y="612" width="1080" height="26" fill="#4a3222"/>
+  <rect x="520" y="638" width="560" height="200" fill="#120c08" opacity=".65"/>
+  <g fill="#3f2b1d" stroke="#2b1d13" stroke-width="3">
+    <rect x="290" y="638" width="230" height="212"/><rect x="1080" y="638" width="230" height="212"/>
+  </g>
+  <g fill="none" stroke="#2b1d13" stroke-width="3">
+    <rect x="304" y="652" width="202" height="62"/><rect x="304" y="724" width="202" height="62"/>
+    <rect x="1094" y="652" width="202" height="62"/><rect x="1094" y="724" width="202" height="62"/>
+  </g>
+  <g fill="#c7a46a"><rect x="390" y="680" width="30" height="6" rx="3"/><rect x="390" y="752" width="30" height="6" rx="3"/><rect x="1180" y="680" width="30" height="6" rx="3"/><rect x="1180" y="752" width="30" height="6" rx="3"/></g>
+
+  <!-- plant -->
+  <g>
+    <path d="M381 550 C340 520 330 470 352 446 C372 480 380 510 381 550Z" fill="#2f5f3a"/>
+    <path d="M381 550 C420 515 432 468 410 440 C392 478 384 512 381 550Z" fill="#3f7a4a"/>
+    <path d="M381 550 C372 500 378 450 396 420 C404 470 396 512 381 550Z" fill="#4f8a5b"/>
+    <path d="M381 550 C350 532 320 520 308 494 C340 496 366 518 381 550Z" fill="#3f7a4a"/>
+    <polygon points="352,548 410,548 402,596 360,596" fill="#b5643c"/>
+    <rect x="348" y="544" width="66" height="8" fill="#9c5232"/>
+  </g>
+
+  <!-- mug + steam -->
+  <g>
+    <path d="M538 556 q20 0 20 16 q0 16 -20 16" fill="none" stroke="#e9e3d3" stroke-width="6"/>
+    <rect x="500" y="546" width="40" height="48" rx="5" fill="#e9e3d3"/>
+    <rect x="500" y="560" width="40" height="7" fill="#5b5ff5"/>
+    <path class="steam" d="M512 538 q-8 -14 0 -26 q8 -12 0 -26" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+    <path class="steam s2" d="M528 538 q-8 -14 0 -26 q8 -12 0 -26" fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- CRT monitor -->
+  <g id="monitor">
+    <polygon points="690,247 910,247 885,222 715,222" fill="#a39b83"/>
+    <rect x="640" y="240" width="320" height="295" rx="20" fill="url(#g-beige)"/>
+    <rect x="650" y="246" width="300" height="7" rx="3.5" fill="#fff" opacity=".25"/>
+    <rect x="664" y="262" width="272" height="212" rx="16" fill="#9d957f"/>
+    <text x="732" y="514" font-family="JetBrains Mono, monospace" font-weight="700" font-size="15" letter-spacing="3" fill="#7a735f">MK-1</text>
+    <g stroke="#a39b83" stroke-width="2"><line x1="790" y1="500" x2="860" y2="500"/><line x1="790" y1="507" x2="860" y2="507"/><line x1="790" y1="514" x2="860" y2="514"/></g>
+    <rect x="898" y="498" width="28" height="14" rx="3" fill="#a39b83"/>
+    <circle id="led" cx="882" cy="505" r="4" fill="#3b3b31"/>
+    <g transform="rotate(-8 674 492)">
+      <rect x="650" y="470" width="48" height="44" fill="#f7e16b"/>
+      <text x="656" y="497" font-family="VT323, monospace" font-size="17" fill="#3d3a1c">hi :)</text>
+    </g>
+    <polygon points="748,535 852,535 872,566 728,566" fill="#b3ab93"/>
+    <rect x="700" y="560" width="200" height="16" rx="6" fill="#c8c0a8"/>
+  </g>
+
+  <!-- keyboard + mouse + floppies on desk -->
+  <polygon points="655,582 945,582 962,604 638,604" fill="#cfc7b0"/>
+  <g stroke="#a39b83" stroke-width="1.5">
+    <line x1="660" y1="589" x2="942" y2="589"/><line x1="652" y1="596" x2="950" y2="596"/>
+  </g>
+  <rect x="638" y="604" width="324" height="5" fill="#a39b83"/>
+  <rect x="984" y="580" width="66" height="26" rx="3" fill="#1e2028"/>
+  <ellipse cx="1016" cy="592" rx="13" ry="8" fill="#cfc7b0"/>
+  <path d="M1016 584 Q1010 566 960 560" fill="none" stroke="#8d8672" stroke-width="2"/>
+  <rect x="1086" y="582" width="44" height="8" fill="#2f2f38"/><rect x="1090" y="574" width="44" height="8" fill="#e0b43c"/>
+
+  <!-- desk lamp (body) -->
+  <g>
+    <ellipse cx="1200" cy="596" rx="42" ry="9" fill="#23242c"/>
+    <line x1="1200" y1="590" x2="1150" y2="450" stroke="#2b2c35" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="1150" cy="450" r="7" fill="#2b2c35"/>
+    <line x1="1150" y1="450" x2="1046" y2="414" stroke="#2b2c35" stroke-width="8" stroke-linecap="round"/>
+    <g transform="translate(1036 418) rotate(-14)">
+      <polygon points="-14,-12 14,-12 34,24 -34,24" fill="#c24a3a"/>
+      <ellipse id="bulb" cx="0" cy="24" rx="30" ry="6" fill="#3a3020"/>
+    </g>
+  </g>
+
+  <!-- ======= DARKNESS (everything above this line is "lit" by it) ======= -->
+  <rect id="shade" x="-20" y="-20" width="1640" height="940" fill="#04050a" opacity=".82"/>
+
+  <!-- window (stays visible in the dark: moonlight) -->
+  <g clip-path="url(#c-window)">
+    <rect x="160" y="100" width="320" height="310" fill="url(#g-sky)"/>
+    <g fill="#fff"><circle cx="190" cy="130" r="1.4"/><circle cx="240" cy="170" r="1"/><circle cx="300" cy="120" r="1.6"/><circle cx="350" cy="200" r="1"/><circle cx="460" cy="230" r="1.2"/><circle cx="210" cy="230" r="1"/><circle cx="280" cy="210" r="1.2"/></g>
+    <circle cx="420" cy="160" r="26" fill="#f3ecce"/>
+    <circle cx="430" cy="152" r="5" fill="#e0d7b2"/><circle cx="412" cy="168" r="3.5" fill="#e0d7b2"/>
+    <g fill="#0b0e1c">
+      <rect x="160" y="330" width="40" height="80"/><rect x="205" y="300" width="36" height="110"/><rect x="245" y="345" width="50" height="65"/>
+      <rect x="300" y="310" width="30" height="100"/><rect x="335" y="355" width="45" height="55"/><rect x="385" y="290" width="40" height="120"/><rect x="430" y="335" width="50" height="75"/>
+    </g>
+    <g fill="#ffd27a" opacity=".85">
+      <rect x="214" y="312" width="5" height="7"/><rect x="226" y="330" width="5" height="7"/><rect x="214" y="360" width="5" height="7"/>
+      <rect x="308" y="322" width="5" height="7"/><rect x="316" y="350" width="5" height="7"/><rect x="394" y="302" width="5" height="7"/>
+      <rect x="408" y="330" width="5" height="7"/><rect x="394" y="372" width="5" height="7"/><rect x="442" y="350" width="5" height="7"/><rect x="258" y="360" width="5" height="7"/>
+    </g>
+    <rect class="rain" x="160" y="10" width="320" height="490" fill="url(#p-rain)"/>
+  </g>
+  <rect x="150" y="90" width="340" height="330" fill="none" stroke="#14151c" stroke-width="20"/>
+  <rect x="316" y="100" width="8" height="310" fill="#14151c"/>
+  <rect x="160" y="251" width="320" height="8" fill="#14151c"/>
+  <rect x="128" y="418" width="384" height="14" fill="#191a22"/>
+  <polygon points="165,432 480,432 760,900 300,900" fill="url(#g-moonbeam)"/>
+
+  <!-- lamp light (fades in on scroll) -->
+  <g id="lamp-light" opacity="0">
+    <ellipse cx="1030" cy="560" rx="560" ry="400" fill="url(#g-warm)"/>
+    <polygon points="1004,446 1072,430 1190,606 920,606" fill="url(#g-cone)"/>
+    <ellipse cx="1040" cy="440" rx="34" ry="12" fill="url(#g-bulb)"/>
+  </g>
+
+  <!-- monitor screen (drawn on top of the darkness so it can glow) -->
+  <g id="screen">
+    <rect id="scr-rect" x="680" y="278" width="240" height="180" rx="12" fill="url(#g-glass)"/>
+    <g id="scr-on" opacity="0" clip-path="url(#c-screen)">
+      <rect x="680" y="278" width="240" height="180" fill="url(#g-screen-on)"/>
+      <g font-family="VT323, monospace" font-size="17" fill="#8dffb5">
+        <text x="696" y="306">MK-1 READY.</text>
+        <text x="696" y="326">&gt; RUN PORTFOLIO.EXE</text>
+        <text x="696" y="346">LOADING...</text>
+      </g>
+      <rect class="blink" x="696" y="354" width="9" height="14" fill="#8dffb5"/>
+      <rect x="680" y="278" width="240" height="180" fill="url(#p-scan)"/>
+    </g>
+    <rect id="scr-flash" x="680" y="278" width="240" height="180" rx="12" fill="#e4fff0" opacity="0"/>
+    <path d="M692 290 Q760 282 836 286 L700 380 Q690 330 692 290Z" fill="#fff" opacity=".05"/>
+  </g>
+  <ellipse id="scr-glow" cx="800" cy="380" rx="360" ry="280" fill="url(#g-glow)" opacity="0"/>
+</svg>
+</div>
+
+<!-- =========================================================
+     4. THE OS — what you see "inside" the monitor
+     EDIT everything in here: this is your actual portfolio.
+     ========================================================= -->
+<div class="os" id="os">
+  <div class="os-frame">
+    <div class="os-stage">
+
+      <div class="boot" id="boot">
+        <p>MK-1 BIOS v2.026 &nbsp;(C) YOUR NAME SYSTEMS</p>
+        <p>CPU ............ CURIOSITY @ 4.20GHz &nbsp;<b>[OK]</b></p>
+        <p>MEMORY ......... 640K OF IDEAS &nbsp;<b>[OK]</b></p>
+        <p>COFFEE ......... DETECTED &nbsp;<b>[OK]</b></p>
+        <p>MOUNTING /WORK ............. &nbsp;<b>[OK]</b></p>
+        <p>LOADING PORTFOLIO.EXE &nbsp;████████████ 100%</p>
+        <p>&gt; WELCOME, VISITOR.<span class="cursor"></span></p>
+      </div>
+
+      <div class="hero" id="hero">
+        <p class="eyebrow">// PORTFOLIO.EXE — VOL.01</p>
+        <h2 class="hero-name"><span class="ln"><span>YOUR</span></span><span class="ln"><span>NAME</span></span></h2>
+        <p class="hero-role">CREATIVE DEVELOPER &amp; DESIGNER — BASED IN YOUR CITY</p>
+      </div>
+
+      <article class="win" id="about">
+        <div class="win-bar"><span>ABOUT_ME.TXT</span><span aria-hidden="true">_ □ ×</span></div>
+        <div class="win-body">
+          <p class="prompt">&gt; cat about_me.txt</p>
+          <p class="lead">Hi, I'm Your Name. I design and build websites that feel like places you can walk into.</p>
+          <p>Write two or three sentences about you here: what you do, what you care about, and what kind of work you want next. Keep it human. This is the part people actually read.</p>
+          <ul class="facts">
+            <li><span>LOCATION</span>Your City, Country</li>
+            <li><span>CURRENTLY</span>Student / Freelance / Studio</li>
+            <li><span>STATUS</span><em class="ok">● OPEN TO WORK</em></li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- PROJECTS: copy/paste a block to add more. Each needs a unique id starting with "proj-". -->
+      <article class="win proj" id="proj-1">
+        <div class="win-bar"><span>PROJECT_01.EXE</span><span aria-hidden="true">01 / 04</span></div>
+        <div class="win-body proj-grid">
+          <div class="preview" data-n="01"><!-- <img src="assets/project-1.jpg" alt="Project One screenshot"> --></div>
+          <div class="proj-info">
+            <p class="meta">2026 — WEB DESIGN · DEVELOPMENT</p>
+            <h3>Project One</h3>
+            <p>One or two sentences on the problem, what you made, and the result. Mention a number if you have one.</p>
+            <ul class="tags"><li>REACT</li><li>GSAP</li><li>FIGMA</li></ul>
+            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="win proj" id="proj-2">
+        <div class="win-bar"><span>PROJECT_02.EXE</span><span aria-hidden="true">02 / 04</span></div>
+        <div class="win-body proj-grid">
+          <div class="preview" data-n="02"></div>
+          <div class="proj-info">
+            <p class="meta">2025 — BRANDING · MOTION</p>
+            <h3>Project Two</h3>
+            <p>One or two sentences on the problem, what you made, and the result.</p>
+            <ul class="tags"><li>AFTER EFFECTS</li><li>ILLUSTRATOR</li></ul>
+            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="win proj" id="proj-3">
+        <div class="win-bar"><span>PROJECT_03.EXE</span><span aria-hidden="true">03 / 04</span></div>
+        <div class="win-body proj-grid">
+          <div class="preview" data-n="03"></div>
+          <div class="proj-info">
+            <p class="meta">2025 — APP · UI/UX</p>
+            <h3>Project Three</h3>
+            <p>One or two sentences on the problem, what you made, and the result.</p>
+            <ul class="tags"><li>TYPESCRIPT</li><li>NEXT.JS</li></ul>
+            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="win proj" id="proj-4">
+        <div class="win-bar"><span>PROJECT_04.EXE</span><span aria-hidden="true">04 / 04</span></div>
+        <div class="win-body proj-grid">
+          <div class="preview" data-n="04"></div>
+          <div class="proj-info">
+            <p class="meta">2024 — EXPERIMENT · 3D</p>
+            <h3>Project Four</h3>
+            <p>One or two sentences on the problem, what you made, and the result.</p>
+            <ul class="tags"><li>THREE.JS</li><li>BLENDER</li></ul>
+            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="win" id="skills">
+        <div class="win-bar"><span>SKILLS.SH</span><span aria-hidden="true">_ □ ×</span></div>
+        <div class="win-body">
+          <p class="prompt">&gt; ls ~/toolkit</p>
+          <div class="cols">
+            <div><h4>/DESIGN</h4><ul><li>UI / UX</li><li>Branding</li><li>Motion</li><li>Figma</li></ul></div>
+            <div><h4>/CODE</h4><ul><li>HTML / CSS</li><li>JavaScript / TS</li><li>React</li><li>GSAP</li></ul></div>
+            <div><h4>/TOOLS</h4><ul><li>Git</li><li>Blender</li><li>Vite</li><li>Notion</li></ul></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="win" id="contact">
+        <div class="win-bar"><span>CONTACT.SH</span><span aria-hidden="true">_ □ ×</span></div>
+        <div class="win-body">
+          <p class="prompt">&gt; ./contact.sh</p>
+          <p class="big">LET'S MAKE<br>SOMETHING.</p>
+          <a class="mail" href="mailto:hello@yourname.com">hello@yourname.com</a>
+          <ul class="links">
+            <li><a href="#" target="_blank" rel="noopener">GITHUB ↗</a></li>
+            <li><a href="#" target="_blank" rel="noopener">LINKEDIN ↗</a></li>
+            <li><a href="#" target="_blank" rel="noopener">INSTAGRAM ↗</a></li>
+            <li><a href="#" target="_blank" rel="noopener">RESUME.PDF ↗</a></li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+    <div class="taskbar">
+      <span class="start">▣ START</span>
+      <span class="task" id="task-label">BOOT.SYS</span>
+      <span id="os-clock">00:00</span>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     5. OUTRO
+     ========================================================= -->
+<div class="outro" id="outro">
+  <p class="outro-kicker">SYSTEM HALTED. THANKS FOR STOPPING BY.</p>
+  <p class="outro-title">SEE YOU<br>NEXT BOOT</p>
+  <a class="btn-link" href="mailto:hello@yourname.com">SAY HELLO</a>
+  <button class="btn-primary" id="rewind">REWIND&nbsp;&nbsp;↺</button>
+</div>
+
+<!-- scroll length (height is set by JS from the timeline) -->
+<div class="track" id="track"></div>
+
+<noscript><style>.gate-actions,.gate-note{display:none}</style><p class="noscript">This portfolio needs JavaScript to run.</p></noscript>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
