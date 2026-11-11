@@ -51,6 +51,24 @@
 - [x] 🤖 `?lite` URL switch skips the finishing pass on weak devices
 - [ ] 🤖 Auto-switch to lite mode when the frame rate drops
 
+## Phase 1.8: The jeepney commute ✅ DONE
+- [x] 🤖 New story: Sean steps out of his front door → through the gate → waits at the curb → jeepney pulls up (horn) → boards at the rear and sits with other passengers → rides past each school → "Para po!" → gets off → walks into CIT-U
+- [x] 🤖 Jeepney with open windows, benches, passengers, a driver, spinning wheels, body sway and an engine sound that follows its speed
+- [x] 🤖 Road signs grow to fit each school's full name; all 3D labels auto-shrink so text never overflows
+- [x] 🤖 Pacing knob: `RIDE` at the top of `js/main.js`
+
+## Phase 1.9: Slow scroll + chapter spreads ✅ DONE
+- [x] 🤖 Slower, heavier scrolling (`VH_PER_BEAT = 15`, Lenis `lerp 0.045` / `wheelMultiplier 0.55`, scrub 1.8)
+- [x] 🤖 Each section is an editorial spread: chapter rail (number, serif title, progress line) + content laid out to fit one screen
+- [x] 🤖 Zoom-to-fit, so no section ever needs an inner scrollbar (desktop and mobile)
+- [x] 🤖 Ambient motion: glass sheen, slow zoom on screenshots, floating icons, drifting light on placeholders
+
+## Phase 2.0: The classroom story ✅ DONE
+- [x] 🤖 Hallway replaced by a 3D CIT-U classroom (desks, classmates, whiteboard, sunny windows)
+- [x] 🤖 Sean walks in and sits → lifts his ID (Profile) → pulls his notebook over and opens it, turning a page per project (Quests) → opens his backpack (Inventory) → daydreams out the window (Side quests) → checks his phone (Save point: GitHub / Facebook / Gmail app icons)
+- [x] 🤖 Each chapter has its own card transition (rise from ID, page flip, slide out of the bag, dreamy blur, phone raise)
+- [x] 🤖 Levels Cleared removed; the jeepney ride covers the schools
+
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
 - [ ] 🤖 Change the poster to show your logo or your best project

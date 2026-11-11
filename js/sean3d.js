@@ -51,6 +51,7 @@
     return low;
   }
   function footX(hip, knee) { return THIGH * Math.sin(hip * D2R) + SHIN * Math.sin((hip - knee) * D2R); }
+  const clampSit = (v) => Math.max(0, Math.min(1, v || 0));
   const STRIDE = (footX(hipAt(0.1), kneeAt(0.1)) - footX(hipAt(0.5), kneeAt(0.5))) / 0.4;
 
   /* ---------------- build ---------------- */
@@ -165,6 +166,10 @@
       return { sh, elbow };
     }
     const armN = arm(1), armF = arm(-1);
+    const phone = new T.Group(); phone.position.set(0.03, -0.27, 0.02); phone.rotation.set(0, 0, 0.3); armN.elbow.add(phone);
+    add(phone, roundedBox(0.012, 0.15, 0.075, 0.004), M.frame);
+    add(phone, new T.PlaneGeometry(0.066, 0.138), new T.MeshBasicMaterial({ color: '#cfe3ff' }), 0.0065, 0, 0, { r: [0, Math.PI / 2, 0] });
+    phone.scale.setScalar(0.0001);
 
     /* ---------------- animate ---------------- */
     const IDLE = { hipN: 2, hipF: -2, knee: 3, armN: -3, armF: 3, el: 12 };
@@ -185,14 +190,32 @@
       if (walking) lastPhase = ph;
 
       const mix = (a, b) => a + (b - a) * w;
-      const hipN = mix(IDLE.hipN, hipAt(ph)), kneeN = mix(IDLE.knee, kneeAt(ph)), pitchN = mix(0, pitchAt(ph));
-      const hipF = mix(IDLE.hipF, hipAt(ph + 0.5)), kneeF = mix(IDLE.knee, kneeAt(ph + 0.5)), pitchF = mix(0, pitchAt(ph + 0.5));
-      const aN = mix(IDLE.armN, armAt(ph)), aF = mix(IDLE.armF, armAt(ph + 0.5));
-      const eN = mix(IDLE.el, elbowAt(ph)), eF = mix(IDLE.el, elbowAt(ph + 0.5));
+      let hipN = mix(IDLE.hipN, hipAt(ph)), kneeN = mix(IDLE.knee, kneeAt(ph)), pitchN = mix(0, pitchAt(ph));
+      let hipF = mix(IDLE.hipF, hipAt(ph + 0.5)), kneeF = mix(IDLE.knee, kneeAt(ph + 0.5)), pitchF = mix(0, pitchAt(ph + 0.5));
+      let aN = mix(IDLE.armN, armAt(ph)), aF = mix(IDLE.armF, armAt(ph + 0.5));
+      let eN = mix(IDLE.el, elbowAt(ph)), eF = mix(IDLE.el, elbowAt(ph + 0.5));
+
+      // seated pose (riding the jeepney): thighs forward, shins down, hands on lap
+      const sit = clampSit(opts.sit);
+      if (sit > 0) {
+        const sm = (a, b) => a + (b - a) * sit;
+        hipN = sm(hipN, 88); hipF = sm(hipF, 84); kneeN = sm(kneeN, 90); kneeF = sm(kneeF, 86); pitchN = sm(pitchN, 0); pitchF = sm(pitchF, 0);
+        aN = sm(aN, 26); aF = sm(aF, 22); eN = sm(eN, 58); eF = sm(eF, 52);
+      }
+
+      // acting poses layered on top (classroom beats)
+      let look = 0, turn = 0, leanX = 0, idLift = 0, phoneOn = 0;
+      for (const p of opts.pose || []) {
+        const k = Math.max(0, Math.min(1, p.w || 0)); if (!k) continue;
+        const bl = (a, b) => (b == null ? a : a + (b - a) * k);
+        aN = bl(aN, p.aN); eN = bl(eN, p.eN); aF = bl(aF, p.aF); eF = bl(eF, p.eF);
+        look += (p.look || 0) * k; turn += (p.turn || 0) * k; leanX += (p.lean || 0) * k;
+        idLift += (p.idLift || 0) * k; phoneOn += (p.phone || 0) * k;
+      }
 
       const low = Math.max(lowest(hipN, kneeN, pitchN), lowest(hipF, kneeF, pitchF));
       const bob = HIP_H - low;
-      body.position.y = bob;
+      body.position.y = bob * (1 - sit);
 
       const vel = (bob - prevBob) / dt; prevBob = bob;
       bagV += (-bagY * 260 - bagV * 16 - vel * 1.2) * dt;
@@ -201,11 +224,14 @@
 
       const t = now / 1000;
       const breathe = (1 - w) * Math.sin(t * 1.7) * 0.004;
-      const lean = (1 + 4 * w) * D2R;
-      torso.rotation.z = -lean;
+      const lean = (1 + 4 * w) * D2R * (1 - sit);
+      torso.rotation.z = -lean - leanX * D2R;
       torso.position.y = breathe;
       head.rotation.z = lean * 0.6 + (w * Math.sin(ph * 4 * Math.PI) * 1.2 + (1 - w) * Math.sin(t * 0.6) * 2) * D2R;
-      head.rotation.y = (1 - w) * Math.sin(t * 0.35) * 0.18;
+      head.rotation.y = (1 - w) * Math.sin(t * 0.35) * 0.18 * (1 - Math.min(1, Math.abs(turn) * 2)) + turn;
+      head.rotation.z += look * D2R;
+      id.position.set(0.13 + idLift * 0.09, 0.25 + idLift * 0.1, 0); id.rotation.z = -0.08 + idLift * 1.0;
+      phone.scale.setScalar(Math.max(0.0001, Math.min(1, phoneOn)));
 
       const setLeg = (L, hip, knee, pitch) => {
         L.hip.rotation.z = hip * D2R;
@@ -220,13 +246,16 @@
 
       // facing: walking direction, or an explicit target (e.g. towards a door)
       let target = opts.face != null ? opts.face : (dir > 0 || now - lastMove > 900 ? 0 : Math.PI);
-      yaw += (target - yaw) * Math.min(1, dt * 6);
+      let dYaw = target - yaw; dYaw = Math.atan2(Math.sin(dYaw), Math.cos(dYaw));   // always turn the short way
+      yaw += dYaw * Math.min(1, dt * 6);
       root.rotation.y = yaw;
     }
 
     function headWorld(v) { return head.getWorldPosition(v); }
     update(0, performance.now());
-    return { root, update, headWorld, stride: STRIDE };
+    const idWorld = (v) => id.localToWorld(v.set(0.01, 0, 0));
+    const phoneWorld = (v) => phone.localToWorld(v.set(0.01, 0, 0));
+    return { root, update, headWorld, idWorld, phoneWorld, stride: STRIDE };
   }
 
   window.Sean3D = { create, STRIDE };
