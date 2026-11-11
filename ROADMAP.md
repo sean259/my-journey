@@ -32,8 +32,17 @@
 - [x] 🤖 Realistic walk: 16-frame procedural sprite (knee bend, arm swing, natural bob, planted feet), parallax depth, drifting clouds, birds, swaying trees, idling jeepney, dawn-to-day light, swinging school doors
 - [x] 🤖 Hallway walk between portfolio sections; every image/icon converted to the same pixel style
 - [x] 🤖 Scroll shortened ~30% (knobs: `VH_PER_BEAT`, `WALK`, `HOLD` at the top of `js/main.js`)
-- [ ] 🤝 Tweak the sprite's look (colours in `C`, shapes in `rasterFrame()` in `js/main.js`)
+- [x] 🤖 Switched from pixel art to an illustrated, realistic style: skeletal SVG character with real gait curves (`js/character.js`), illustrated Cebu street + CIT-U + hallway (`js/scenes.js`), smooth storybook content cards
+- [x] 🤖 Slower walk (`WALK = 40` beats) so every step and detail can be seen
+- [ ] 🤝 Tweak Sean's look (colours/shapes in `markup()` in `js/character.js`) or his gait (`GAIT` keyframes)
 - [ ] 🤖 Optional: background chiptune music for the walk
+
+## Phase 1.6: Real-time 3D + transitions ✅ DONE
+- [x] 🤖 Rebuilt everything in Three.js: 3D room (real lamp light, shadows, CRT boot screen), 3D Cebu street (sky that changes from dawn to day, swaying trees, jeepney, waving CIT-U flag), 3D hallway with a labeled door per section
+- [x] 🤖 Sean is a jointed 3D character (`js/sean3d.js`) driven by the gait curves; he turns toward the CIT-U doors and walks in
+- [x] 🤖 Transitions: camera dives into the CRT, flash to the street, captions at each school, glass doors swing open, card reveals (blur, clip, contents one by one), CRT power-off
+- [x] 🤖 Snapping (cards never stop half-open), chapter menu, progress bar, camera widens slightly when scrolling fast
+- [ ] 🙋 Optional: a rigged, photoreal character from Mixamo (.glb). The skeleton code can drive it.
 
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)

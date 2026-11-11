@@ -8,13 +8,13 @@
   <meta name="theme-color" content="#0b0b0f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,700;100,800;100,900;125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="locked">
 
 <!-- =========================================================
-     1. GATE — the "enter with sound" screen
+     GATE
      ========================================================= -->
 <section class="gate" id="gate">
   <header class="bar">
@@ -22,458 +22,206 @@
     <span>BOOT A / BOOT B</span>
     <span>© 2026</span>
   </header>
-
   <div class="gate-inner">
     <div class="mini-pc" aria-hidden="true">
       <div class="mini-body"><div class="mini-screen"><span class="mini-prompt">&gt;</span><span class="mini-cursor"></span></div></div>
       <div class="mini-neck"></div>
       <div class="mini-base"></div>
     </div>
-
     <h1 class="gate-title">
       <span class="ln"><span>SEAN</span></span>
       <span class="ln"><span>LORICO</span></span>
     </h1>
-
     <p class="gate-sub">BEST EXPERIENCED WITH SOUND ON</p>
-
     <div class="gate-actions">
-      <button class="btn-primary" data-enter="sound">POWER ON WITH SOUND&nbsp;&nbsp;♪</button>
-      <button class="btn-link" data-enter="mute">POWER ON WITHOUT SOUND</button>
+      <button class="btn-primary" data-enter="sound" disabled>POWER ON WITH SOUND&nbsp;&nbsp;♪</button>
+      <button class="btn-link" data-enter="mute" disabled>POWER ON WITHOUT SOUND</button>
     </div>
-
-    <p class="gate-note">SYSTEM IDLE. POWER'S ON WHEN YOU ARE.</p>
+    <p class="gate-note" id="gate-note">LOADING THE WORLD…</p>
   </div>
-
   <footer class="gate-foot">DESIGNED &amp; BUILT BY <b>SEAN LORICO</b></footer>
 </section>
 
 <!-- =========================================================
-     2. HUD — persistent top / bottom bars
+     THE 3D WORLD (room → street → hallway)
      ========================================================= -->
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<!-- story overlays that sit on top of the 3D -->
+<div class="overlay" aria-hidden="true">
+  <div class="title-card" id="title-card">
+    <p class="tc-kicker">A JOURNEY BY</p>
+    <h2 class="tc-name">SEAN<br>LORICO</h2>
+    <p class="tc-sub">"Ama iter, non finem." Love the journey, not the destination.</p>
+    <p class="tc-press">SCROLL TO START WALKING ↓</p>
+  </div>
+  <div class="caption" data-cap="home"><span>CEBU, PHILIPPINES</span><b>Every journey starts at home.</b></div>
+  <div class="caption" data-cap="s1"><span>2015 – 2019 · ELEMENTARY</span><b>St. Scholastica's Academy</b></div>
+  <div class="caption" data-cap="s2"><span>2020 – 2022 · JUNIOR HIGH</span><b>Divino Amore Academy</b></div>
+  <div class="caption" data-cap="s3"><span>2022 – 2023 · SENIOR HIGH</span><b>Asian College of Technology</b></div>
+  <div class="caption" data-cap="s4"><span>2023 – PRESENT · COLLEGE</span><b>Cebu Institute of Technology – University</b></div>
+  <div class="bubble" id="bubble">CIT-U! Let's go.</div>
+  <div class="flash" id="flash"></div>
+  <div class="crt-off" id="crt-off"><i></i></div>
+</div>
+
+<!-- =========================================================
+     HUD
+     ========================================================= -->
+<div class="progress" id="progress-bar"><i></i></div>
 <header class="hud bar" id="hud">
   <span><span class="sys">SYS-001 · </span><span id="progress">000%</span></span>
   <span id="chapter">CH.00 — THE ROOM</span>
   <button class="hud-btn" id="sound-toggle" aria-pressed="false">SOUND ○ OFF</button>
 </header>
+<nav class="chapters" id="chapters" aria-label="Chapters"></nav>
 <div class="hud-bottom" id="hud-bottom">
   <span></span>
   <span class="hint" id="hint">SCROLL TO ENTER THE MACHINE&nbsp;&nbsp;↓</span>
 </div>
 
 <!-- =========================================================
-     3. THE ROOM — one SVG, the camera zooms into the monitor
+     PORTFOLIO CARDS (appear in the hallway)
      ========================================================= -->
-<div class="room" id="room" aria-hidden="true">
-<svg class="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="g-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3040"/><stop offset="1" stop-color="#22242f"/></linearGradient>
-    <linearGradient id="g-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d2c22"/><stop offset="1" stop-color="#1f160f"/></linearGradient>
-    <linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080e24"/><stop offset="1" stop-color="#28366a"/></linearGradient>
-    <linearGradient id="g-beige" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e6dec8"/><stop offset="1" stop-color="#b6ad94"/></linearGradient>
-    <linearGradient id="g-desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d573b"/><stop offset="1" stop-color="#5f422d"/></linearGradient>
-    <linearGradient id="g-curtain" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#5a2e3c"/><stop offset=".3" stop-color="#7a3f52"/><stop offset=".6" stop-color="#55293a"/><stop offset="1" stop-color="#743c4e"/>
-    </linearGradient>
-    <linearGradient id="g-glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#25302a"/><stop offset=".5" stop-color="#0c120f"/><stop offset="1" stop-color="#060908"/></linearGradient>
-    <radialGradient id="g-screen-on" cx=".5" cy=".5" r=".75"><stop offset="0" stop-color="#114329"/><stop offset="1" stop-color="#03100a"/></radialGradient>
-    <radialGradient id="g-glow"><stop offset="0" stop-color="#7dffad" stop-opacity=".32"/><stop offset=".45" stop-color="#7dffad" stop-opacity=".08"/><stop offset="1" stop-color="#7dffad" stop-opacity="0"/></radialGradient>
-    <radialGradient id="g-warm"><stop offset="0" stop-color="#ffc46b" stop-opacity=".5"/><stop offset=".5" stop-color="#ff9f4a" stop-opacity=".14"/><stop offset="1" stop-color="#ff9f4a" stop-opacity="0"/></radialGradient>
-    <radialGradient id="g-bulb"><stop offset="0" stop-color="#fffbe9"/><stop offset=".4" stop-color="#ffe2a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient>
-    <linearGradient id="g-cone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe4ad" stop-opacity=".5"/><stop offset="1" stop-color="#ffd08a" stop-opacity="0"/></linearGradient>
-    <linearGradient id="g-moonbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9c8ff" stop-opacity=".09"/><stop offset="1" stop-color="#b9c8ff" stop-opacity="0"/></linearGradient>
-    <pattern id="p-rain" width="60" height="90" patternUnits="userSpaceOnUse">
-      <line x1="12" y1="0" x2="6" y2="24" stroke="#a9bcff" stroke-opacity=".35" stroke-width="1.4"/>
-      <line x1="44" y1="44" x2="38" y2="68" stroke="#a9bcff" stroke-opacity=".25" stroke-width="1.2"/>
-      <line x1="30" y1="20" x2="26" y2="34" stroke="#a9bcff" stroke-opacity=".18" stroke-width="1"/>
-    </pattern>
-    <pattern id="p-scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#000" fill-opacity=".3"/></pattern>
-    <clipPath id="c-window"><rect x="160" y="100" width="320" height="310"/></clipPath>
-    <clipPath id="c-screen"><rect x="680" y="278" width="240" height="180" rx="12"/></clipPath>
-  </defs>
+<main class="stage" id="stage">
 
-  <!-- wall + floor -->
-  <rect width="1600" height="652" fill="url(#g-wall)"/>
-  <rect y="652" width="1600" height="248" fill="url(#g-floor)"/>
-  <rect y="640" width="1600" height="14" fill="#181920"/>
-  <g stroke="#000" stroke-opacity=".18" stroke-width="2">
-    <line x1="0" y1="700" x2="1600" y2="700"/><line x1="0" y1="762" x2="1600" y2="762"/><line x1="0" y1="836" x2="1600" y2="836"/>
-  </g>
-  <ellipse cx="800" cy="862" rx="560" ry="52" fill="#4c2834"/>
-  <ellipse cx="800" cy="862" rx="520" ry="40" fill="none" stroke="#6b3a4a" stroke-width="3" stroke-dasharray="10 8"/>
+  <article class="win" id="about">
+    <div class="win-bar"><span>PLAYER PROFILE</span><span aria-hidden="true">P1</span></div>
+    <div class="win-body about-grid">
+      <figure class="portrait r">
+        <img src="assets/profile-alt.jpg" alt="Portrait of Sean Lorico">
+        <figcaption>SEAN J. C. LORICO</figcaption>
+      </figure>
+      <div>
+        <p class="label r">▶ STAGE 1 · ABOUT</p>
+        <p class="lead r">I'm Sean Janssenn C. Lorico, a Computer Engineering student at Cebu Institute of Technology — University.</p>
+        <p class="r">I'm especially drawn to software development, system design, and creating user experiences that actually solve real problems.</p>
+        <p class="r">I like taking apart problems the same way I like taking apart old gadgets — piece by piece, until I understand exactly how they work.</p>
+        <ul class="facts">
+          <li class="r"><span>BASED IN</span>Cebu, Philippines</li>
+          <li class="r"><span>STUDYING</span>BS Computer Engineering</li>
+          <li class="r"><span>FOCUS</span>Software &amp; system design</li>
+          <li class="r"><span>BUILDING NOW</span>QuestGo</li>
+          <li class="r"><span>STATUS</span><em class="ok">● OPEN TO PROJECTS</em></li>
+        </ul>
+      </div>
+    </div>
+  </article>
 
-  <!-- curtains -->
-  <line x1="88" y1="74" x2="552" y2="74" stroke="#14151b" stroke-width="6" stroke-linecap="round"/>
-  <path d="M96 76 H150 V470 Q130 480 120 468 Q108 480 96 470 Z" fill="url(#g-curtain)"/>
-  <path d="M490 76 H546 V470 Q534 480 522 468 Q510 480 490 470 Z" fill="url(#g-curtain)"/>
+  <!-- PROJECTS: copy/paste a block to add more. Each needs a unique id starting with "proj-". -->
+  <article class="win proj" id="proj-1">
+    <div class="win-bar"><span>QUEST 01 · U-CONVERTIT</span><span aria-hidden="true">1/3</span></div>
+    <div class="win-body proj-grid">
+      <div class="preview has-img r" data-n="01"><img src="assets/uconvertit.jpg" alt="Screenshot of U-ConvertIT"></div>
+      <div class="proj-info">
+        <p class="meta r"><em class="badge live">★ COMPLETE · LIVE</em></p>
+        <h3 class="r">U-ConvertIT</h3>
+        <p class="r">An AI-powered academic productivity tool built for students. Features a Paraphraser, PDF Converter, Humanizer, Quiz Maker, and OCR, all in one platform. Built to make studying smarter and faster.</p>
+        <ul class="tags r"><li>REACT</li><li>PYTHON</li><li>SUPABASE</li></ul>
+        <a class="open r" href="https://u-convertit-frontend.vercel.app/" target="_blank" rel="noopener">▶ VIEW PROJECT</a>
+      </div>
+    </div>
+  </article>
 
-  <!-- shelf + books -->
-  <rect x="640" y="170" width="330" height="10" fill="#4e3524"/>
-  <rect x="664" y="180" width="8" height="18" fill="#3a271b"/><rect x="938" y="180" width="8" height="18" fill="#3a271b"/>
-  <rect x="660" y="108" width="18" height="62" fill="#8c3b3b"/>
-  <rect x="680" y="116" width="14" height="54" fill="#3b5c8c"/>
-  <rect x="696" y="100" width="20" height="70" fill="#c9a227"/>
-  <rect x="718" y="112" width="16" height="58" fill="#2f6b4f"/>
-  <rect x="736" y="122" width="12" height="48" fill="#d8d2c0"/>
-  <polygon points="752,170 768,170 800,118 786,112" fill="#6e4a8c"/>
-  <!-- floppy stack -->
-  <rect x="822" y="160" width="46" height="10" fill="#2f2f38"/><rect x="826" y="150" width="46" height="10" fill="#c24a3a"/><rect x="820" y="140" width="46" height="10" fill="#3a63a8"/>
-  <!-- tiny cactus -->
-  <polygon points="904,170 936,170 932,148 908,148" fill="#b5643c"/>
-  <rect x="914" y="112" width="12" height="38" rx="6" fill="#4f8a5b"/><rect x="904" y="124" width="8" height="16" rx="4" fill="#4f8a5b"/>
+  <article class="win proj" id="proj-2">
+    <div class="win-bar"><span>QUEST 02 · QUESTGO</span><span aria-hidden="true">2/3</span></div>
+    <div class="win-body proj-grid">
+      <div class="preview r" data-n="02"><!-- add assets/questgo.jpg as an <img> here (and class "has-img") when you have a screenshot --></div>
+      <div class="proj-info">
+        <p class="meta r"><em class="badge wip">◐ IN PROGRESS</em></p>
+        <h3 class="r">QuestGo</h3>
+        <p class="r">QuestGo connects CIT-U students who need help with tasks to students willing to complete them for a reward. Students post, browse, and accept "Quests," then coordinate meetups through the platform. Each Quest runs Available → Accepted → In Progress → Completed, and unaccepted Quests expire after 30 minutes.</p>
+        <ul class="tags r"><li>REACT</li><li>SUPABASE</li></ul>
+        <span class="open is-muted r">STILL IN DEVELOPMENT</span>
+      </div>
+    </div>
+  </article>
 
-  <!-- wall clock (hands driven by JS, real time) -->
-  <circle cx="1070" cy="140" r="38" fill="#ece6d6" stroke="#15161c" stroke-width="5"/>
-  <g stroke="#15161c" stroke-width="3">
-    <line x1="1070" y1="108" x2="1070" y2="114"/><line x1="1070" y1="166" x2="1070" y2="172"/>
-    <line x1="1038" y1="140" x2="1044" y2="140"/><line x1="1096" y1="140" x2="1102" y2="140"/>
-  </g>
-  <line id="hand-h" x1="1070" y1="140" x2="1070" y2="121" stroke="#15161c" stroke-width="4" stroke-linecap="round"/>
-  <line id="hand-m" x1="1070" y1="140" x2="1070" y2="112" stroke="#15161c" stroke-width="3" stroke-linecap="round"/>
-  <line id="hand-s" x1="1070" y1="146" x2="1070" y2="110" stroke="#d9472b" stroke-width="1.5"/>
-  <circle cx="1070" cy="140" r="3" fill="#15161c"/>
+  <article class="win proj" id="proj-3">
+    <div class="win-bar"><span>QUEST 03 · ???</span><span aria-hidden="true">3/3</span></div>
+    <div class="win-body proj-grid">
+      <div class="preview is-soon r" data-n="??"></div>
+      <div class="proj-info">
+        <p class="meta r"><em class="badge soon">LOCKED</em></p>
+        <h3 class="r">Next build</h3>
+        <p class="r">There's always something on the lift. New projects land here as soon as they're road-ready.</p>
+        <ul class="tags r"><li>IN PLANNING</li></ul>
+        <span class="open is-muted r">WATCH THIS SPACE</span>
+      </div>
+    </div>
+  </article>
 
-  <!-- poster -->
-  <rect x="1160" y="90" width="170" height="240" fill="#1c0709"/>
-  <image href="assets/profile.jpg" x="1166" y="96" width="158" height="142" preserveAspectRatio="xMidYMid slice"/>
-  <text x="1172" y="274" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="32" fill="#f1ece0" style="font-stretch:125%">AMA</text>
-  <text x="1172" y="305" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="32" fill="#e30613" style="font-stretch:125%">ITER.</text>
-  <text x="1173" y="322" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2" fill="#bdb6a8">NON FINEM.</text>
-  <circle cx="1245" cy="98" r="4" fill="#ddd"/>
+  <article class="win" id="skills">
+    <div class="win-bar"><span>INVENTORY</span><span aria-hidden="true">8 ITEMS</span></div>
+    <div class="win-body">
+      <p class="label r">▶ TECH STACK</p>
+      <p class="section-note r">The languages, frameworks, and tools I build with.</p>
+      <h4 class="stack-h r">LANGUAGES</h4>
+      <ul class="stack-grid">
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" alt="">C</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" alt="">C#</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="">Java</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="">Python</li>
+      </ul>
+      <h4 class="stack-h r">FRAMEWORKS &amp; TOOLS</h4>
+      <ul class="stack-grid">
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="">React</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="">Tailwind CSS</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" alt="">Supabase</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" alt="">Figma</li>
+      </ul>
+    </div>
+  </article>
 
-  <!-- desk -->
-  <polygon points="300,560 1300,560 1340,612 260,612" fill="url(#g-desk)"/>
-  <rect x="260" y="612" width="1080" height="26" fill="#4a3222"/>
-  <rect x="520" y="638" width="560" height="200" fill="#120c08" opacity=".65"/>
-  <g fill="#3f2b1d" stroke="#2b1d13" stroke-width="3">
-    <rect x="290" y="638" width="230" height="212"/><rect x="1080" y="638" width="230" height="212"/>
-  </g>
-  <g fill="none" stroke="#2b1d13" stroke-width="3">
-    <rect x="304" y="652" width="202" height="62"/><rect x="304" y="724" width="202" height="62"/>
-    <rect x="1094" y="652" width="202" height="62"/><rect x="1094" y="724" width="202" height="62"/>
-  </g>
-  <g fill="#c7a46a"><rect x="390" y="680" width="30" height="6" rx="3"/><rect x="390" y="752" width="30" height="6" rx="3"/><rect x="1180" y="680" width="30" height="6" rx="3"/><rect x="1180" y="752" width="30" height="6" rx="3"/></g>
+  <article class="win" id="hobbies">
+    <div class="win-bar"><span>SIDE QUESTS</span><span aria-hidden="true">6</span></div>
+    <div class="win-body">
+      <p class="label r">▶ OFF THE CLOCK</p>
+      <p class="section-note r">Engine off, still running. These are the things I lose hours to.</p>
+      <ul class="hobby-grid">
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 7h11a4.5 4.5 0 0 1 4.4 3.6l.8 4.2A3 3 0 0 1 19.8 18c-1 0-1.9-.5-2.4-1.4L16.6 15H7.4l-.8 1.6A2.7 2.7 0 0 1 4.2 18a3 3 0 0 1-2.9-3.2l.8-4.2A4.5 4.5 0 0 1 6.5 7Z"/><path d="M7 10v3M5.5 11.5h3M15.6 10.6h.01M18 12.6h.01M16.8 14h.01"/></svg></span><b>GAMING</b><span>Late-night runs and one-more-match discipline problems.</span></li>
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h13v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-4Z"/><path d="M17 12h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M7.5 7.5c0-1.2 1-1.4 1-2.5M11 7.5c0-1.2 1-1.4 1-2.5M14.5 7.5c0-1.2 1-1.4 1-2.5"/></svg></span><b>COOKING</b><span>Recipes are just instructions with better rewards.</span></li>
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18"/><circle cx="8" cy="7" r="2.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.2" fill="currentColor" stroke="none"/><circle cx="10" cy="17" r="2.2" fill="currentColor" stroke="none"/></svg></span><b>EDITING</b><span>Cutting clips and colour until the timing feels right.</span></li>
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3c-3 2.6-4.5 5.6-4.5 9S9 18.4 12 21M12 3c3 2.6 4.5 5.6 4.5 9S15 18.4 12 21M3.4 9h17.2M3.4 15h17.2"/></svg></span><b>SPORTS</b><span>Any excuse to be off a chair and on a court.</span></li>
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.8V18c4.3-.3 6.5.2 8 1.7 1.5-1.5 3.7-2 8-1.7V4.8c-4.3-.3-6.5.2-8 1.7Z"/><path d="M12 6.5v13.2"/></svg></span><b>READING</b><span>Fiction on the commute, documentation everywhere else.</span></li>
+        <li class="r"><span class="h-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5h18V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19V9.5Z"/><path d="m3.4 9.5 1-4.4 17 2.2-.6 2.2"/><path d="m8.6 5.7-1.2 3.6M13.6 6.3l-1.2 3.4M18.4 7l-1 3"/></svg></span><b>MOVIES</b><span>Thrillers, heists, and anything with a good chase scene.</span></li>
+      </ul>
+    </div>
+  </article>
 
-  <!-- plant -->
-  <g>
-    <path d="M381 550 C340 520 330 470 352 446 C372 480 380 510 381 550Z" fill="#2f5f3a"/>
-    <path d="M381 550 C420 515 432 468 410 440 C392 478 384 512 381 550Z" fill="#3f7a4a"/>
-    <path d="M381 550 C372 500 378 450 396 420 C404 470 396 512 381 550Z" fill="#4f8a5b"/>
-    <path d="M381 550 C350 532 320 520 308 494 C340 496 366 518 381 550Z" fill="#3f7a4a"/>
-    <polygon points="352,548 410,548 402,596 360,596" fill="#b5643c"/>
-    <rect x="348" y="544" width="66" height="8" fill="#9c5232"/>
-  </g>
+  <article class="win" id="education">
+    <div class="win-bar"><span>LEVELS CLEARED</span><span aria-hidden="true">3/4 ✓</span></div>
+    <div class="win-body">
+      <p class="label r">▶ EDUCATION</p>
+      <ol class="edu">
+        <li class="now r"><img src="assets/cit.jpg" alt="Cebu Institute of Technology - University logo"><div><p class="edu-status">▶ NOW PLAYING</p><p class="edu-years">2023 – PRESENT · COLLEGE</p><p class="edu-school">Cebu Institute of Technology — University</p><p class="edu-addr">N. Bacalso Avenue, Cebu City</p></div></li>
+        <li class="r"><img src="assets/act.jpg" alt="Asian College of Technology logo"><div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2022 – 2023 · SENIOR HIGH</p><p class="edu-school">Asian College of Technology</p><p class="edu-addr">Bulacao, Talisay City, Cebu</p></div></li>
+        <li class="r"><img src="assets/divino.jpg" alt="Divino Amore Academy logo"><div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2020 – 2022 · JUNIOR HIGH</p><p class="edu-school">Divino Amore Academy</p><p class="edu-addr">Mohon, Talisay City, Cebu</p></div></li>
+        <li class="r"><img src="assets/scho.jpg" alt="St. Scholastica's Academy logo"><div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2015 – 2019 · ELEMENTARY</p><p class="edu-school">St. Scholastica's Academy</p><p class="edu-addr">Lagtang, Talisay City, Cebu</p></div></li>
+      </ol>
+    </div>
+  </article>
 
-  <!-- mug + steam -->
-  <g>
-    <path d="M538 556 q20 0 20 16 q0 16 -20 16" fill="none" stroke="#e9e3d3" stroke-width="6"/>
-    <rect x="500" y="546" width="40" height="48" rx="5" fill="#e9e3d3"/>
-    <rect x="500" y="560" width="40" height="7" fill="#5b5ff5"/>
-    <path class="steam" d="M512 538 q-8 -14 0 -26 q8 -12 0 -26" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
-    <path class="steam s2" d="M528 538 q-8 -14 0 -26 q8 -12 0 -26" fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="3" stroke-linecap="round"/>
-  </g>
+  <article class="win" id="contact">
+    <div class="win-bar"><span>SAVE POINT</span><span aria-hidden="true">♥♥♥</span></div>
+    <div class="win-body">
+      <p class="label r">▶ CONTINUE?</p>
+      <p class="big r">LET'S BUILD<br>SOMETHING.</p>
+      <p class="section-note r">Got an idea, a project, or just want to talk shop? Pick a lane.</p>
+      <a class="mail r" href="mailto:seanlorico9@gmail.com">seanlorico9@gmail.com</a>
+      <ul class="links r">
+        <li><a href="https://github.com/sean259" target="_blank" rel="noopener">▶ GITHUB</a></li>
+        <li><a href="https://www.facebook.com/sean.lorico.5" target="_blank" rel="noopener">▶ FACEBOOK</a></li>
+        <li><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=seanlorico9@gmail.com" target="_blank" rel="noopener">▶ GMAIL</a></li>
+      </ul>
+      <p class="signoff r">© 2026 SEAN LORICO — BUILDING. DESIGNING. CREATING.</p>
+    </div>
+  </article>
 
-  <!-- CRT monitor -->
-  <g id="monitor">
-    <polygon points="690,247 910,247 885,222 715,222" fill="#a39b83"/>
-    <rect x="640" y="240" width="320" height="295" rx="20" fill="url(#g-beige)"/>
-    <rect x="650" y="246" width="300" height="7" rx="3.5" fill="#fff" opacity=".25"/>
-    <rect x="664" y="262" width="272" height="212" rx="16" fill="#9d957f"/>
-    <text x="732" y="514" font-family="JetBrains Mono, monospace" font-weight="700" font-size="15" letter-spacing="3" fill="#7a735f">MK-1</text>
-    <g stroke="#a39b83" stroke-width="2"><line x1="790" y1="500" x2="860" y2="500"/><line x1="790" y1="507" x2="860" y2="507"/><line x1="790" y1="514" x2="860" y2="514"/></g>
-    <rect x="898" y="498" width="28" height="14" rx="3" fill="#a39b83"/>
-    <circle id="led" cx="882" cy="505" r="4" fill="#3b3b31"/>
-    <g transform="rotate(-8 674 492)">
-      <rect x="650" y="470" width="48" height="44" fill="#f7e16b"/>
-      <text x="656" y="497" font-family="VT323, monospace" font-size="17" fill="#3d3a1c">hi :)</text>
-    </g>
-    <polygon points="748,535 852,535 872,566 728,566" fill="#b3ab93"/>
-    <rect x="700" y="560" width="200" height="16" rx="6" fill="#c8c0a8"/>
-  </g>
-
-  <!-- keyboard + mouse + floppies on desk -->
-  <polygon points="655,582 945,582 962,604 638,604" fill="#cfc7b0"/>
-  <g stroke="#a39b83" stroke-width="1.5">
-    <line x1="660" y1="589" x2="942" y2="589"/><line x1="652" y1="596" x2="950" y2="596"/>
-  </g>
-  <rect x="638" y="604" width="324" height="5" fill="#a39b83"/>
-  <rect x="984" y="580" width="66" height="26" rx="3" fill="#1e2028"/>
-  <ellipse cx="1016" cy="592" rx="13" ry="8" fill="#cfc7b0"/>
-  <path d="M1016 584 Q1010 566 960 560" fill="none" stroke="#8d8672" stroke-width="2"/>
-  <rect x="1086" y="582" width="44" height="8" fill="#2f2f38"/><rect x="1090" y="574" width="44" height="8" fill="#e0b43c"/>
-
-  <!-- desk lamp (body) -->
-  <g>
-    <ellipse cx="1200" cy="596" rx="42" ry="9" fill="#23242c"/>
-    <line x1="1200" y1="590" x2="1150" y2="450" stroke="#2b2c35" stroke-width="8" stroke-linecap="round"/>
-    <circle cx="1150" cy="450" r="7" fill="#2b2c35"/>
-    <line x1="1150" y1="450" x2="1046" y2="414" stroke="#2b2c35" stroke-width="8" stroke-linecap="round"/>
-    <g transform="translate(1036 418) rotate(-14)">
-      <polygon points="-14,-12 14,-12 34,24 -34,24" fill="#c24a3a"/>
-      <ellipse id="bulb" cx="0" cy="24" rx="30" ry="6" fill="#3a3020"/>
-    </g>
-  </g>
-
-  <!-- ======= DARKNESS (everything above this line is "lit" by it) ======= -->
-  <rect id="shade" x="-20" y="-20" width="1640" height="940" fill="#04050a" opacity=".82"/>
-
-  <!-- window (stays visible in the dark: moonlight) -->
-  <g clip-path="url(#c-window)">
-    <rect x="160" y="100" width="320" height="310" fill="url(#g-sky)"/>
-    <g fill="#fff"><circle cx="190" cy="130" r="1.4"/><circle cx="240" cy="170" r="1"/><circle cx="300" cy="120" r="1.6"/><circle cx="350" cy="200" r="1"/><circle cx="460" cy="230" r="1.2"/><circle cx="210" cy="230" r="1"/><circle cx="280" cy="210" r="1.2"/></g>
-    <circle cx="420" cy="160" r="26" fill="#f3ecce"/>
-    <circle cx="430" cy="152" r="5" fill="#e0d7b2"/><circle cx="412" cy="168" r="3.5" fill="#e0d7b2"/>
-    <g fill="#0b0e1c">
-      <rect x="160" y="330" width="40" height="80"/><rect x="205" y="300" width="36" height="110"/><rect x="245" y="345" width="50" height="65"/>
-      <rect x="300" y="310" width="30" height="100"/><rect x="335" y="355" width="45" height="55"/><rect x="385" y="290" width="40" height="120"/><rect x="430" y="335" width="50" height="75"/>
-    </g>
-    <g fill="#ffd27a" opacity=".85">
-      <rect x="214" y="312" width="5" height="7"/><rect x="226" y="330" width="5" height="7"/><rect x="214" y="360" width="5" height="7"/>
-      <rect x="308" y="322" width="5" height="7"/><rect x="316" y="350" width="5" height="7"/><rect x="394" y="302" width="5" height="7"/>
-      <rect x="408" y="330" width="5" height="7"/><rect x="394" y="372" width="5" height="7"/><rect x="442" y="350" width="5" height="7"/><rect x="258" y="360" width="5" height="7"/>
-    </g>
-    <rect class="rain" x="160" y="10" width="320" height="490" fill="url(#p-rain)"/>
-  </g>
-  <rect x="150" y="90" width="340" height="330" fill="none" stroke="#14151c" stroke-width="20"/>
-  <rect x="316" y="100" width="8" height="310" fill="#14151c"/>
-  <rect x="160" y="251" width="320" height="8" fill="#14151c"/>
-  <rect x="128" y="418" width="384" height="14" fill="#191a22"/>
-  <polygon points="165,432 480,432 760,900 300,900" fill="url(#g-moonbeam)"/>
-
-  <!-- lamp light (fades in on scroll) -->
-  <g id="lamp-light" opacity="0">
-    <ellipse cx="1030" cy="560" rx="560" ry="400" fill="url(#g-warm)"/>
-    <polygon points="1004,446 1072,430 1190,606 920,606" fill="url(#g-cone)"/>
-    <ellipse cx="1040" cy="440" rx="34" ry="12" fill="url(#g-bulb)"/>
-  </g>
-
-  <!-- monitor screen (drawn on top of the darkness so it can glow) -->
-  <g id="screen">
-    <rect id="scr-rect" x="680" y="278" width="240" height="180" rx="12" fill="url(#g-glass)"/>
-    <g id="scr-on" opacity="0" clip-path="url(#c-screen)">
-      <rect x="680" y="278" width="240" height="180" fill="url(#g-screen-on)"/>
-      <g font-family="VT323, monospace" font-size="17" fill="#8dffb5">
-        <text x="696" y="306">MK-1 READY.</text>
-        <text x="696" y="326">&gt; RUN JOURNEY.EXE</text>
-        <text x="696" y="346">LOADING...</text>
-      </g>
-      <rect class="blink" x="696" y="354" width="9" height="14" fill="#8dffb5"/>
-      <rect x="680" y="278" width="240" height="180" fill="url(#p-scan)"/>
-    </g>
-    <rect id="scr-flash" x="680" y="278" width="240" height="180" rx="12" fill="#e4fff0" opacity="0"/>
-    <path d="M692 290 Q760 282 836 286 L700 380 Q690 330 692 290Z" fill="#fff" opacity=".05"/>
-  </g>
-  <ellipse id="scr-glow" cx="800" cy="380" rx="360" ry="280" fill="url(#g-glow)" opacity="0"/>
-</svg>
-</div>
+</main>
 
 <!-- =========================================================
-     4. THE OS — what you see "inside" the monitor
-     EDIT everything in here: this is your actual portfolio.
-     ========================================================= -->
-<div class="os" id="os">
-  <div class="os-frame">
-
-    <!-- School hallway: scrolls sideways as Sean walks between sections (drawn by js/main.js) -->
-    <div class="hallway" id="hallway" aria-hidden="true">
-      <svg class="layer" id="hall-world" viewBox="0 0 6000 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <div class="hw-dim"></div>
-      <div class="boy hall-boy" id="hall-boy"><svg viewBox="0 0 32 54" shape-rendering="crispEdges"><g id="hall-boy-inner"></g></svg></div>
-    </div>
-
-    <!-- The journey: Sean walks from home to CIT-U (world drawn by js/main.js) -->
-    <div class="journey" id="journey" aria-hidden="true">
-      <div class="sky sky-dawn"></div>
-      <div class="sky sky-day" id="sky-day"></div>
-      <div class="sun" id="sun"></div>
-      <div class="birds">
-        <span class="bird b1"></span><span class="bird b2"></span><span class="bird b3"></span>
-      </div>
-      <svg class="layer" id="layer-clouds" viewBox="0 0 3600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <svg class="layer" id="layer-far" viewBox="0 0 2600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <svg class="layer" id="layer-mid" viewBox="0 0 3400 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <svg class="layer" id="layer-world" viewBox="0 0 4200 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <div class="boy" id="boy"><svg viewBox="0 0 32 54" shape-rendering="crispEdges"><g id="boy-inner"></g></svg></div>
-      <svg class="layer" id="layer-fg" viewBox="0 0 5600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
-      <div class="tint" id="tint"></div>
-      <div class="bubble" id="bubble">CIT-U! LET'S GO ▶</div>
-      <div class="title-card" id="title-card">
-        <p class="tc-kicker">A JOURNEY BY</p>
-        <h2 class="tc-name">SEAN<br>LORICO</h2>
-        <p class="tc-sub">"AMA ITER, NON FINEM."<br>LOVE THE JOURNEY, NOT THE DESTINATION.</p>
-        <p class="tc-press">▶ SCROLL TO START</p>
-      </div>
-    </div>
-
-    <div class="os-stage">
-
-      <div class="boot" id="boot">
-        <p>SL-1 GAME SYSTEM &nbsp;(C) LORICO SYSTEMS</p>
-        <p>CHECKING CARTRIDGE ....... <b>[OK]</b></p>
-        <p>LOADING WORLD: CEBU, PH .. <b>[OK]</b></p>
-        <p>SPAWNING PLAYER: SEAN .... <b>[OK]</b></p>
-        <p>EQUIPPING SUNGLASSES ..... <b>[OK]</b></p>
-        <p>SAVE DATA FOUND: CIT-U ... <b>[OK]</b></p>
-        <p>&gt; SCROLL TO CONTINUE<span class="cursor"></span></p>
-      </div>
-
-      <article class="win" id="about">
-        <div class="win-bar"><span>PLAYER PROFILE</span><span aria-hidden="true">P1</span></div>
-        <div class="win-body about-grid">
-          <figure class="portrait">
-            <span class="pix"><img src="assets/profile-alt.jpg" alt="Portrait of Sean Lorico" data-pixel="60"></span>
-            <figcaption>SEAN J. C. LORICO</figcaption>
-          </figure>
-          <div>
-            <p class="label">▶ STAGE 1 · ABOUT</p>
-            <p class="lead">I'm Sean Janssenn C. Lorico, a Computer Engineering student at Cebu Institute of Technology — University.</p>
-            <p>I'm especially drawn to software development, system design, and creating user experiences that actually solve real problems.</p>
-            <p>I like taking apart problems the same way I like taking apart old gadgets — piece by piece, until I understand exactly how they work.</p>
-            <ul class="facts">
-              <li><span>BASED IN</span>Cebu, Philippines</li>
-              <li><span>STUDYING</span>BS Computer Engineering</li>
-              <li><span>FOCUS</span>Software &amp; system design</li>
-              <li><span>BUILDING NOW</span>QuestGo</li>
-              <li><span>STATUS</span><em class="ok">● OPEN TO PROJECTS</em></li>
-            </ul>
-          </div>
-        </div>
-      </article>
-
-      <!-- PROJECTS: copy/paste a block to add more. Each needs a unique id starting with "proj-". -->
-      <article class="win proj" id="proj-1">
-        <div class="win-bar"><span>QUEST 01 · U-CONVERTIT</span><span aria-hidden="true">1/3</span></div>
-        <div class="win-body proj-grid">
-          <div class="preview has-img" data-n="01"><img src="assets/uconvertit.jpg" alt="Screenshot of U-ConvertIT" data-pixel="160"></div>
-          <div class="proj-info">
-            <p class="meta"><em class="badge live">★ COMPLETE · LIVE</em></p>
-            <h3>U-ConvertIT</h3>
-            <p>An AI-powered academic productivity tool built for students. Features a Paraphraser, PDF Converter, Humanizer, Quiz Maker, and OCR, all in one platform. Built to make studying smarter and faster.</p>
-            <ul class="tags"><li>REACT</li><li>PYTHON</li><li>SUPABASE</li></ul>
-            <a class="open" href="https://u-convertit-frontend.vercel.app/" target="_blank" rel="noopener">▶ VIEW PROJECT</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="win proj" id="proj-2">
-        <div class="win-bar"><span>QUEST 02 · QUESTGO</span><span aria-hidden="true">2/3</span></div>
-        <div class="win-body proj-grid">
-          <div class="preview" data-n="02"><!-- add assets/questgo.jpg as <img ... data-pixel="160"> here (and class "has-img") when you have a screenshot --></div>
-          <div class="proj-info">
-            <p class="meta"><em class="badge wip">◐ IN PROGRESS</em></p>
-            <h3>QuestGo</h3>
-            <p>QuestGo connects CIT-U students who need help with tasks to students willing to complete them for a reward. Students post, browse, and accept "Quests," then coordinate meetups through the platform. Each Quest runs Available → Accepted → In Progress → Completed, and unaccepted Quests expire after 30 minutes.</p>
-            <ul class="tags"><li>REACT</li><li>SUPABASE</li></ul>
-            <span class="open is-muted">STILL IN DEVELOPMENT</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="win proj" id="proj-3">
-        <div class="win-bar"><span>QUEST 03 · ???</span><span aria-hidden="true">3/3</span></div>
-        <div class="win-body proj-grid">
-          <div class="preview is-soon" data-n="??"></div>
-          <div class="proj-info">
-            <p class="meta"><em class="badge soon">LOCKED</em></p>
-            <h3>Next build</h3>
-            <p>There's always something on the lift. New projects land here as soon as they're road-ready.</p>
-            <ul class="tags"><li>IN PLANNING</li></ul>
-            <span class="open is-muted">WATCH THIS SPACE</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="win" id="skills">
-        <div class="win-bar"><span>INVENTORY</span><span aria-hidden="true">8 ITEMS</span></div>
-        <div class="win-body">
-          <p class="label">▶ TECH STACK</p>
-          <p class="section-note">The languages, frameworks, and tools I build with.</p>
-          <h4 class="stack-h">LANGUAGES</h4>
-          <ul class="stack-grid">
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" alt="" data-pixel="16" crossorigin="anonymous">C</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" alt="" data-pixel="16" crossorigin="anonymous">C#</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Java</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Python</li>
-          </ul>
-          <h4 class="stack-h">FRAMEWORKS &amp; TOOLS</h4>
-          <ul class="stack-grid">
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="" data-pixel="16" crossorigin="anonymous">React</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Tailwind CSS</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Supabase</li>
-            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Figma</li>
-          </ul>
-        </div>
-      </article>
-
-      <article class="win" id="hobbies">
-        <div class="win-bar"><span>SIDE QUESTS</span><span aria-hidden="true">6</span></div>
-        <div class="win-body">
-          <p class="label">▶ OFF THE CLOCK</p>
-          <p class="section-note">Engine off, still running. These are the things I lose hours to.</p>
-          <ul class="hobby-grid">
-            <li><span class="px-icon" data-icon="gaming"></span><b>GAMING</b><span>Late-night runs and one-more-match discipline problems.</span></li>
-            <li><span class="px-icon" data-icon="cooking"></span><b>COOKING</b><span>Recipes are just instructions with better rewards.</span></li>
-            <li><span class="px-icon" data-icon="editing"></span><b>EDITING</b><span>Cutting clips and colour until the timing feels right.</span></li>
-            <li><span class="px-icon" data-icon="sports"></span><b>SPORTS</b><span>Any excuse to be off a chair and on a court.</span></li>
-            <li><span class="px-icon" data-icon="reading"></span><b>READING</b><span>Fiction on the commute, documentation everywhere else.</span></li>
-            <li><span class="px-icon" data-icon="movies"></span><b>MOVIES</b><span>Thrillers, heists, and anything with a good chase scene.</span></li>
-          </ul>
-        </div>
-      </article>
-
-      <article class="win" id="education">
-        <div class="win-bar"><span>LEVELS CLEARED</span><span aria-hidden="true">3/4 ✓</span></div>
-        <div class="win-body">
-          <p class="label">▶ EDUCATION</p>
-          <ol class="edu">
-            <li class="now">
-              <img src="assets/cit.jpg" alt="Cebu Institute of Technology - University logo" data-pixel="28">
-              <div><p class="edu-status">▶ NOW PLAYING</p><p class="edu-years">2023 – PRESENT · COLLEGE</p><p class="edu-school">Cebu Institute of Technology — University</p><p class="edu-addr">N. Bacalso Avenue, Cebu City</p></div>
-            </li>
-            <li>
-              <img src="assets/act.jpg" alt="Asian College of Technology logo" data-pixel="28">
-              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2022 – 2023 · SENIOR HIGH</p><p class="edu-school">Asian College of Technology</p><p class="edu-addr">Bulacao, Talisay City, Cebu</p></div>
-            </li>
-            <li>
-              <img src="assets/divino.jpg" alt="Divino Amore Academy logo" data-pixel="28">
-              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2020 – 2022 · JUNIOR HIGH</p><p class="edu-school">Divino Amore Academy</p><p class="edu-addr">Mohon, Talisay City, Cebu</p></div>
-            </li>
-            <li>
-              <img src="assets/scho.jpg" alt="St. Scholastica's Academy logo" data-pixel="28">
-              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2015 – 2019 · ELEMENTARY</p><p class="edu-school">St. Scholastica's Academy</p><p class="edu-addr">Lagtang, Talisay City, Cebu</p></div>
-            </li>
-          </ol>
-        </div>
-      </article>
-
-      <article class="win" id="contact">
-        <div class="win-bar"><span>SAVE POINT</span><span aria-hidden="true">♥♥♥</span></div>
-        <div class="win-body">
-          <p class="label">▶ CONTINUE?</p>
-          <p class="big">LET'S BUILD<br>SOMETHING.</p>
-          <p class="section-note">Got an idea, a project, or just want to talk shop? Pick a lane.</p>
-          <a class="mail" href="mailto:seanlorico9@gmail.com">seanlorico9@gmail.com</a>
-          <ul class="links">
-            <li><a href="https://github.com/sean259" target="_blank" rel="noopener">▶ GITHUB</a></li>
-            <li><a href="https://www.facebook.com/sean.lorico.5" target="_blank" rel="noopener">▶ FACEBOOK</a></li>
-            <li><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=seanlorico9@gmail.com" target="_blank" rel="noopener">▶ GMAIL</a></li>
-          </ul>
-          <p class="signoff">© 2026 SEAN LORICO — BUILDING. DESIGNING. CREATING.</p>
-        </div>
-      </article>
-
-    </div>
-    <div class="taskbar">
-      <span class="start">P1 SEAN</span>
-      <span class="hearts" aria-hidden="true">♥♥♥</span>
-      <span class="task" id="task-label">BOOT.SYS</span>
-      <span id="os-clock">00:00</span>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================================
-     5. OUTRO
+     OUTRO
      ========================================================= -->
 <div class="outro" id="outro">
   <p class="outro-kicker">SYSTEM HALTED. THANKS FOR STOPPING BY.</p>
@@ -482,7 +230,6 @@
   <button class="btn-primary" id="rewind">REWIND&nbsp;&nbsp;↺</button>
 </div>
 
-<!-- scroll length (height is set by JS from the timeline) -->
 <div class="track" id="track"></div>
 
 <noscript><style>.gate-actions,.gate-note{display:none}</style><p class="noscript">This portfolio needs JavaScript to run.</p></noscript>
@@ -490,6 +237,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="js/sean3d.js"></script>
+<script src="js/world3d.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
