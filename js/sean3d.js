@@ -124,8 +124,16 @@
     tube(torso, [[0.0, 0.52, -0.075], [0.07, 0.46, -0.065], [0.118, 0.36, -0.025], [0.126, 0.3, -0.004]], 0.006, M.lany);
     const id = new T.Group(); id.position.set(0.13, 0.25, 0); id.rotation.z = -0.08; torso.add(id);
     add(id, new T.BoxGeometry(0.006, 0.085, 0.062), M.card);
-    add(id, new T.BoxGeometry(0.008, 0.02, 0.062), M.gold, 0, 0.033, 0);
-    add(id, new T.BoxGeometry(0.008, 0.025, 0.02), M.skin, 0, 0.002, 0.015);
+    add(id, new T.PlaneGeometry(0.062, 0.085), new T.MeshBasicMaterial({ map: (() => { const c = document.createElement('canvas'); c.width = 248; c.height = 340; const g = c.getContext('2d'); ((g, w, h) => {
+      g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#8a1c2b'; g.fillRect(0, 0, w, 74); g.fillStyle = '#f4c542'; g.fillRect(0, 74, w, 8);
+      g.fillStyle = '#ffe08a'; g.font = '900 34px Archivo, Arial'; g.textAlign = 'center'; g.fillText('CIT-U', w / 2, 50);
+      g.fillStyle = '#d9a07a'; g.fillRect(64, 104, 120, 132); g.fillStyle = '#3d2313'; g.fillRect(64, 104, 120, 40);
+      g.fillStyle = '#ff8a1e'; g.fillRect(84, 156, 80, 18);
+      g.fillStyle = '#17151c'; g.font = '700 24px Inter, Arial'; g.fillText('SEAN LORICO', w / 2, 272);
+      g.fillStyle = '#6b6478'; g.font = '500 18px Inter, Arial'; g.fillText('BS COMPUTER ENG.', w / 2, 300);
+      g.fillStyle = '#17151c'; for (let i = 0; i < 26; i++) g.fillRect(40 + i * 6.5, 314, (i % 3) + 1.5, 18);
+    })(g, 248, 340); const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.center.set(0.5, 0.5); t.rotation = Math.PI; return t; })() }), 0.0035, 0, 0, { r: [0, Math.PI / 2, 0] });
     // backpack (springy)
     const bag = new T.Group(); bag.position.set(-0.165, 0.29, 0); torso.add(bag);
     add(bag, roundedBox(0.3, 0.38, 0.15, 0.04), M.bag, 0, 0, 0, { r: [0, Math.PI / 2, 0] });
@@ -168,7 +176,15 @@
     const armN = arm(1), armF = arm(-1);
     const phone = new T.Group(); phone.position.set(0.03, -0.27, 0.02); phone.rotation.set(0, 0, 0.3); armN.elbow.add(phone);
     add(phone, roundedBox(0.012, 0.15, 0.075, 0.004), M.frame);
-    add(phone, new T.PlaneGeometry(0.066, 0.138), new T.MeshBasicMaterial({ color: '#cfe3ff' }), 0.0065, 0, 0, { r: [0, Math.PI / 2, 0] });
+    add(phone, new T.PlaneGeometry(0.066, 0.138), new T.MeshBasicMaterial({ map: (() => { const c = document.createElement('canvas'); c.width = 264; c.height = 552; const g = c.getContext('2d'); ((g, w, h) => {
+      const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#2d3368'); gr.addColorStop(0.55, '#8a1c2b'); gr.addColorStop(1, '#f4c542');
+      g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = '300 92px Inter, Arial'; g.fillText('9:41', w / 2, 150);
+      g.font = '500 22px Inter, Arial'; g.fillText('Tuesday · Cebu', w / 2, 186);
+      const apps = [['#17151c', 'GH'], ['#1877f2', 'f'], ['#ffffff', 'M']];
+      apps.forEach(([c, t], i) => { const x = 46 + i * 66; g.fillStyle = c; g.beginPath(); g.roundRect ? g.roundRect(x, 420, 50, 50, 12) : g.rect(x, 420, 50, 50); g.fill(); g.fillStyle = c === '#ffffff' ? '#ea4335' : '#fff'; g.font = '700 22px Inter, Arial'; g.fillText(t, x + 25, 453); });
+      g.fillStyle = 'rgba(255,255,255,.8)'; g.fillRect(w / 2 - 50, h - 22, 100, 6);
+    })(g, 264, 552); const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.center.set(0.5, 0.5); t.rotation = Math.PI; return t; })(), toneMapped: false }), 0.0065, 0, 0, { r: [0, Math.PI / 2, 0] });
     phone.scale.setScalar(0.0001);
 
     /* ---------------- animate ---------------- */

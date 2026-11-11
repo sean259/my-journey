@@ -160,7 +160,7 @@
   /* --------------------------------------------------------
      STATE (driven by the scroll timeline)
      -------------------------------------------------------- */
-  const S = { room: 0, lamp: 0, monitor: 0, boot: 0, exit: 0, jeepIn: 0, board: 0, ride: 0, alight: 0, walk2: 0, enter: 0, walkIn: 0, sitDown: 0, idL: 0, nbk: 0, page: 0, bagL: 0, dream: 0, phone: 0, pull: 0, screenOff: 0 };
+  const S = { room: 0, lamp: 0, monitor: 0, boot: 0, exit: 0, jeepIn: 0, board: 0, ride: 0, alight: 0, walk2: 0, enter: 0, walkIn: 0, sitDown: 0, idL: 0, nbk: 0, page: 0, bagL: 0, dream: 0, phone: 0, zoom: 0, focus: 0, pull: 0, screenOff: 0 };
   const look = { x: 0, y: 0 };
   let room, street, hall, sean, seanHall, ready = false;
   // the commute: home → curb → jeepney → CIT-U
@@ -334,13 +334,13 @@
     .to(S, { walkIn: 1, duration: 5, ease: 'none' }, 'cls')
     .to(S, { sitDown: 1, duration: 1.6, ease: 'power1.inOut' }, 'cls+=5');
   const BEATS = {
-    about: { set: { idL: 1 }, kind: 'id' },
-    'proj-1': { set: { idL: 0, nbk: 1 }, kind: 'page0', act: 3.2 },
+    about: { set: { idL: 1 }, kind: 'id', focus: 0 },
+    'proj-1': { set: { idL: 0, nbk: 1 }, kind: 'page0', act: 3.2, focus: 1 },
     'proj-2': { set: { page: 1 }, kind: 'page', act: 1.8 },
     'proj-3': { set: { page: 2 }, kind: 'page', act: 1.8 },
-    skills: { set: { nbk: 0, bagL: 1 }, kind: 'bag', act: 3 },
-    hobbies: { set: { bagL: 0, dream: 1 }, kind: 'dream', act: 3 },
-    contact: { set: { dream: 0, phone: 1 }, kind: 'phone', act: 3 }
+    skills: { set: { nbk: 0, bagL: 1 }, kind: 'bag', act: 3, focus: 2 },
+    hobbies: { set: { bagL: 0, dream: 1 }, kind: 'dream', act: 3, focus: 3 },
+    contact: { set: { dream: 0, phone: 1 }, kind: 'phone', act: 3, focus: 4 }
   };
   const mob = () => isMobile();
   const IN = {
@@ -358,14 +358,18 @@
     const beat = BEATS[card.id] || { set: {}, kind: 'dream' };
     const label = `card${i}`, act = beat.act || 2.4;
     tl.addLabel(label, i === 0 ? 'cls+=6.8' : undefined);
-    tl.to(S, { ...beat.set, duration: act, ease: 'sine.inOut' }, label);
+    const ZOUT = 1.6, ZIN = 2.0, dive = beat.kind !== 'page';
+    let actAt = tl.labels[label];
+    if (dive && current) { tl.to(S, { zoom: 0, duration: ZOUT, ease: 'power2.inOut' }, label); actAt += ZOUT * 0.8; }
+    tl.to(S, { ...beat.set, duration: act, ease: 'sine.inOut' }, actAt);
+    if (dive) tl.set(S, { focus: beat.focus }, actAt).to(S, { zoom: 1, duration: ZIN, ease: 'power2.in' }, actAt + act - 0.4);
     if (current) {
       const out = beat.kind === 'page'
         ? { autoAlpha: 0, rotationY: () => (mob() ? 0 : -100), x: () => (mob() ? -60 : 0), transformOrigin: '0% 50%', duration: 1.3, ease: 'power2.in' }
         : { autoAlpha: 0, scale: 0.95, y: -30, filter: 'blur(12px)', duration: 1.1, ease: 'power2.in' };
       tl.to(current, out, label);
     }
-    const inAt = tl.labels[label] + (beat.kind === 'page' ? 0.7 : act - 0.6);
+    const inAt = dive ? actAt + act - 0.4 + ZIN - 0.5 : tl.labels[label] + 0.7;
     tl.fromTo(card, IN[beat.kind][0], { ...SHOWN, duration: beat.kind === 'page' ? 1.3 : 1.7, ease: 'power3.out', immediateRender: false }, inAt)
       .fromTo($$('.r', card), { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.07, ease: 'power2.out', immediateRender: false }, inAt + 0.45)
       .fromTo(card, { '--p': 0 }, { '--p': 1, duration: i === cards.length - 1 ? HOLD + 2 : HOLD, ease: 'none', immediateRender: false });
@@ -373,6 +377,8 @@
     rest.push({ start: tl.labels[label], rest: inAt + 1.8, i });
     current = card; prevKind = beat.kind;
   });
+
+  tl.to(S, { zoom: 0, duration: 1.2, ease: 'power2.inOut' });
 
   // POWER OFF — CRT collapse, back in the room, pull out, lamp off
   tl.addLabel('off')
@@ -409,7 +415,7 @@
   // gentle snap: never leave a card half-open
   let snapTimer = 0, snapping = false;
   function maybeSnap() {
-    if (snapping) return;
+    if (snapping || window.__nosnap) return;
     const t = yToTime(scrollY);
     for (const z of rest) {
       if (t > z.start + 0.05 && t < z.rest - 0.05) {
@@ -553,7 +559,7 @@
   }
 
   let fovKick = 0;
-  const bubble = $('#bubble'), bubble2 = $('#bubble2');
+  const bubble = $('#bubble'), bubble2 = $('#bubble2'), zoomShade = $('#zoom-shade');
   function frame() {
     if (!ready) return;
     const now = performance.now(), t = now / 1000;
@@ -696,6 +702,7 @@
       H.nb.position.set(lerp(SX + 0.85, SX + 0.6, slide), 0.76, lerp(SZ + 0.12, SZ, slide));
       H.nb.rotation.y = lerp(0.35, 0, slide);
       H.leftHinge.rotation.x = -Math.PI * open;
+      H.leftHinge.position.y = 0.034 * open;                       // flipped cover rests on top of the desk
       const pn = Math.floor(S.page + 1e-4), pf = S.page - pn;
       H.paperR.map = H.pageTexs[Math.min(2, pf > 0.001 ? pn + 1 : pn)];
       H.turnPage.material.map = H.pageTexs[Math.min(2, pn)];
@@ -718,9 +725,30 @@
       blend(shot(SX - 0.3, 1.45, SZ + 1.05 * k, SX + 0.3, 1.0, SZ + 0.05), smooth(S.phone));
       out.pos.copy(tmp); out.look.copy(tmpLook);
       out.pos.x += look.x * 0.08; out.pos.y += look.y * 0.05;
+      // ---- first-person zoom: cut to his eyes, then push in until the prop fills the frame ----
+      const z = S.zoom;
+      if (z > 0.001) {
+        const P = new THREE.Vector3();
+        const fidx = Math.round(S.focus);
+        if (fidx === 0) seanHall.idWorld(P);
+        else if (fidx === 1) P.set(H.nb.position.x, 0.775, H.nb.position.z);
+        else if (fidx === 2) P.set(H.bag.position.x, 0.42, H.bag.position.z);
+        else if (fidx === 3) P.set(0, 1.95, -4.98);
+        else seanHall.phoneWorld(P);
+        const NEAR = [0.16, 0.42, 0.5, 2.4, 0.24][fidx];
+        const eye = seanHall.headWorld(new THREE.Vector3()); eye.y += 0.02;
+        const dir = P.clone().sub(eye).normalize();
+        const fp = eye.clone().addScaledVector(dir, 0.16);
+        const close = P.clone().addScaledVector(dir, -NEAR);
+        if (fidx === 1) close.set(P.x - 0.05, P.y + NEAR, P.z);          // straight down onto the notebook
+        const a = smooth(clamp(z / 0.4)), b = smooth(clamp((z - 0.3) / 0.7));
+        out.pos.lerp(fp, a).lerp(close, b);
+        out.look.lerp(P, a);
+        zoomShade.style.opacity = (0.55 * smooth(clamp((z - 0.6) / 0.4))).toFixed(3);
+      } else zoomShade.style.opacity = '0';
     }
     // shift the frame so Sean sits beside the chapter cards (left on desktop, top on phones)
-    const shift = stage === 'hall' ? smooth(clamp((S.walkIn - 0.85) / 0.15)) : 0;
+    const shift = stage === 'hall' ? smooth(clamp((S.walkIn - 0.85) / 0.15)) * (1 - smooth(clamp(S.zoom * 1.6))) : 0;
     if (shift > 0.001) {
       const W = innerWidth, Hh = innerHeight;
       if (isMobile()) camera.setViewOffset(W, Hh, 0, Hh * 0.24 * shift, W, Hh);
@@ -737,7 +765,7 @@
     if (stage === 'room') { warp = smooth(clamp((S.room - 0.82) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
     else if (stage === 'end') { warp = smooth(clamp((S.pull > 0 ? 0.18 - S.pull : 0) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
     else if (stage === 'street') { warp = smooth(clamp((S.enter - 0.55) / 0.45)) * 0.8; bloom = 0.4 + 0.6 * S.enter; exposure = 0.9; }
-    else { bloom = 0.35; exposure = 0.86; }
+    else { const zw = smooth(clamp((S.zoom - 0.55) / 0.45)); warp = zw * (1 - zw) * 2.4; bloom = 0.35 - 0.2 * zw; exposure = 0.86; }
     if (LITE) { renderer.toneMappingExposure = exposure; renderer.setRenderTarget(null); renderer.render(scene, camera); }
     else post.render(scene, camera, { time: t, warp, bloom, exposure });
   }

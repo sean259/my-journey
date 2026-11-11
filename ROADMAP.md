@@ -69,6 +69,10 @@
 - [x] 🤖 Each chapter has its own card transition (rise from ID, page flip, slide out of the bag, dreamy blur, phone raise)
 - [x] 🤖 Levels Cleared removed; the jeepney ride covers the schools
 
+## Phase 2.1: First-person close-ups ✅ DONE
+- [x] 🤖 Each chapter dives from Sean's eyes into the prop (same lens warp as the CRT dive): ID → Profile, notebook (pages turn as you scroll) → Quests, backpack → Inventory, window → Side quests, phone → Save point
+- [x] 🤖 Pulls back out between chapters; the 3D ID and phone have real faces (CIT-U badge, lock screen with app icons)
+
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
 - [ ] 🤖 Change the poster to show your logo or your best project
