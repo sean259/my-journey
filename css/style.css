@@ -257,7 +257,7 @@ html.lenis, html.lenis body { height: auto; }
 .stack-grid .px-src, .edu .px-src { display: none; }
 .stack-grid .px-canvas { width: 32px; height: 32px; flex-shrink: 0; }
 .edu .px-canvas { width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--g-ink); background: #fff; flex-shrink: 0; object-fit: cover; }
-.px-icon { display: block; width: 36px; height: 36px; }
+.px-icon { display: block; width: 44px; height: 44px; }
 .px-icon svg { width: 100%; height: 100%; display: block; }
 
 /* ---------- dialog windows ---------- */

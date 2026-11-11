@@ -29,7 +29,10 @@
 ## Phase 1.5: The journey + game style ✅ DONE
 - [x] 🤖 After the boot: title card → pixel Sean walks from home past his school milestones (2015 → 2020 → 2022) and a jeepney → arrives at CIT-U → door opens → iris-out
 - [x] 🤖 Inside the computer is now a pixel game: dialog windows in a CIT-U hallway, Player Profile, Quests, Inventory, Side Quests, Levels Cleared, Save Point
-- [ ] 🤝 Tweak the sprite (hair, clothes, shoes) to look more like you. It's a 16×24 text map in `js/main.js` (`TOP`, `STRIDE`, `STAND`)
+- [x] 🤖 Realistic walk: 16-frame procedural sprite (knee bend, arm swing, natural bob, planted feet), parallax depth, drifting clouds, birds, swaying trees, idling jeepney, dawn-to-day light, swinging school doors
+- [x] 🤖 Hallway walk between portfolio sections; every image/icon converted to the same pixel style
+- [x] 🤖 Scroll shortened ~30% (knobs: `VH_PER_BEAT`, `WALK`, `HOLD` at the top of `js/main.js`)
+- [ ] 🤝 Tweak the sprite's look (colours in `C`, shapes in `rasterFrame()` in `js/main.js`)
 - [ ] 🤖 Optional: background chiptune music for the walk
 
 ## Phase 2: Make the room yours (personalization)
