@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Name — Portfolio</title>
-  <meta name="description" content="Portfolio of Your Name. Scroll into the machine.">
+  <title>Sean Lorico — Portfolio</title>
+  <meta name="description" content="Sean Janssenn C. Lorico — Computer Engineering student at CIT-U, Cebu. Scroll into the machine.">
   <meta name="theme-color" content="#0b0b0f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="locked">
@@ -30,10 +30,9 @@
       <div class="mini-base"></div>
     </div>
 
-    <!-- EDIT: your name -->
     <h1 class="gate-title">
-      <span class="ln"><span>YOUR</span></span>
-      <span class="ln"><span>NAME</span></span>
+      <span class="ln"><span>SEAN</span></span>
+      <span class="ln"><span>LORICO</span></span>
     </h1>
 
     <p class="gate-sub">BEST EXPERIENCED WITH SOUND ON</p>
@@ -46,7 +45,7 @@
     <p class="gate-note">SYSTEM IDLE. POWER'S ON WHEN YOU ARE.</p>
   </div>
 
-  <footer class="gate-foot">DESIGNED &amp; BUILT BY <b>YOUR NAME</b></footer>
+  <footer class="gate-foot">DESIGNED &amp; BUILT BY <b>SEAN LORICO</b></footer>
 </section>
 
 <!-- =========================================================
@@ -135,11 +134,11 @@
   <circle cx="1070" cy="140" r="3" fill="#15161c"/>
 
   <!-- poster -->
-  <rect x="1160" y="90" width="170" height="240" fill="#d94f30"/>
-  <circle cx="1245" cy="172" r="58" fill="#14141a"/>
-  <circle cx="1245" cy="172" r="20" fill="#d94f30"/>
-  <text x="1174" y="282" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="34" fill="#f1ece0" style="font-stretch:125%">NIGHT</text>
-  <text x="1174" y="314" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="34" fill="#f1ece0" style="font-stretch:125%">SHIFT</text>
+  <rect x="1160" y="90" width="170" height="240" fill="#1c0709"/>
+  <image href="assets/profile.jpg" x="1166" y="96" width="158" height="142" preserveAspectRatio="xMidYMid slice"/>
+  <text x="1172" y="274" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="32" fill="#f1ece0" style="font-stretch:125%">AMA</text>
+  <text x="1172" y="305" font-family="Archivo, Arial Black, sans-serif" font-weight="900" font-size="32" fill="#e30613" style="font-stretch:125%">ITER.</text>
+  <text x="1173" y="322" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="2" fill="#bdb6a8">NON FINEM.</text>
   <circle cx="1245" cy="98" r="4" fill="#ddd"/>
 
   <!-- desk -->
@@ -255,7 +254,7 @@
       <rect x="680" y="278" width="240" height="180" fill="url(#g-screen-on)"/>
       <g font-family="VT323, monospace" font-size="17" fill="#8dffb5">
         <text x="696" y="306">MK-1 READY.</text>
-        <text x="696" y="326">&gt; RUN PORTFOLIO.EXE</text>
+        <text x="696" y="326">&gt; RUN JOURNEY.EXE</text>
         <text x="696" y="346">LOADING...</text>
       </g>
       <rect class="blink" x="696" y="354" width="9" height="14" fill="#8dffb5"/>
@@ -274,125 +273,199 @@
      ========================================================= -->
 <div class="os" id="os">
   <div class="os-frame">
+
+    <!-- School hallway: scrolls sideways as Sean walks between sections (drawn by js/main.js) -->
+    <div class="hallway" id="hallway" aria-hidden="true">
+      <svg class="layer" id="hall-world" viewBox="0 0 6000 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <div class="hw-dim"></div>
+      <div class="boy hall-boy" id="hall-boy"><svg viewBox="0 0 32 54" shape-rendering="crispEdges"><g id="hall-boy-inner"></g></svg></div>
+    </div>
+
+    <!-- The journey: Sean walks from home to CIT-U (world drawn by js/main.js) -->
+    <div class="journey" id="journey" aria-hidden="true">
+      <div class="sky sky-dawn"></div>
+      <div class="sky sky-day" id="sky-day"></div>
+      <div class="sun" id="sun"></div>
+      <div class="birds">
+        <span class="bird b1"></span><span class="bird b2"></span><span class="bird b3"></span>
+      </div>
+      <svg class="layer" id="layer-clouds" viewBox="0 0 3600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <svg class="layer" id="layer-far" viewBox="0 0 2600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <svg class="layer" id="layer-mid" viewBox="0 0 3400 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <svg class="layer" id="layer-world" viewBox="0 0 4200 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <div class="boy" id="boy"><svg viewBox="0 0 32 54" shape-rendering="crispEdges"><g id="boy-inner"></g></svg></div>
+      <svg class="layer" id="layer-fg" viewBox="0 0 5600 360" preserveAspectRatio="none" shape-rendering="crispEdges"></svg>
+      <div class="tint" id="tint"></div>
+      <div class="bubble" id="bubble">CIT-U! LET'S GO ▶</div>
+      <div class="title-card" id="title-card">
+        <p class="tc-kicker">A JOURNEY BY</p>
+        <h2 class="tc-name">SEAN<br>LORICO</h2>
+        <p class="tc-sub">"AMA ITER, NON FINEM."<br>LOVE THE JOURNEY, NOT THE DESTINATION.</p>
+        <p class="tc-press">▶ SCROLL TO START</p>
+      </div>
+    </div>
+
     <div class="os-stage">
 
       <div class="boot" id="boot">
-        <p>MK-1 BIOS v2.026 &nbsp;(C) YOUR NAME SYSTEMS</p>
-        <p>CPU ............ CURIOSITY @ 4.20GHz &nbsp;<b>[OK]</b></p>
-        <p>MEMORY ......... 640K OF IDEAS &nbsp;<b>[OK]</b></p>
-        <p>COFFEE ......... DETECTED &nbsp;<b>[OK]</b></p>
-        <p>MOUNTING /WORK ............. &nbsp;<b>[OK]</b></p>
-        <p>LOADING PORTFOLIO.EXE &nbsp;████████████ 100%</p>
-        <p>&gt; WELCOME, VISITOR.<span class="cursor"></span></p>
-      </div>
-
-      <div class="hero" id="hero">
-        <p class="eyebrow">// PORTFOLIO.EXE — VOL.01</p>
-        <h2 class="hero-name"><span class="ln"><span>YOUR</span></span><span class="ln"><span>NAME</span></span></h2>
-        <p class="hero-role">CREATIVE DEVELOPER &amp; DESIGNER — BASED IN YOUR CITY</p>
+        <p>SL-1 GAME SYSTEM &nbsp;(C) LORICO SYSTEMS</p>
+        <p>CHECKING CARTRIDGE ....... <b>[OK]</b></p>
+        <p>LOADING WORLD: CEBU, PH .. <b>[OK]</b></p>
+        <p>SPAWNING PLAYER: SEAN .... <b>[OK]</b></p>
+        <p>EQUIPPING SUNGLASSES ..... <b>[OK]</b></p>
+        <p>SAVE DATA FOUND: CIT-U ... <b>[OK]</b></p>
+        <p>&gt; SCROLL TO CONTINUE<span class="cursor"></span></p>
       </div>
 
       <article class="win" id="about">
-        <div class="win-bar"><span>ABOUT_ME.TXT</span><span aria-hidden="true">_ □ ×</span></div>
-        <div class="win-body">
-          <p class="prompt">&gt; cat about_me.txt</p>
-          <p class="lead">Hi, I'm Your Name. I design and build websites that feel like places you can walk into.</p>
-          <p>Write two or three sentences about you here: what you do, what you care about, and what kind of work you want next. Keep it human. This is the part people actually read.</p>
-          <ul class="facts">
-            <li><span>LOCATION</span>Your City, Country</li>
-            <li><span>CURRENTLY</span>Student / Freelance / Studio</li>
-            <li><span>STATUS</span><em class="ok">● OPEN TO WORK</em></li>
-          </ul>
+        <div class="win-bar"><span>PLAYER PROFILE</span><span aria-hidden="true">P1</span></div>
+        <div class="win-body about-grid">
+          <figure class="portrait">
+            <span class="pix"><img src="assets/profile-alt.jpg" alt="Portrait of Sean Lorico" data-pixel="60"></span>
+            <figcaption>SEAN J. C. LORICO</figcaption>
+          </figure>
+          <div>
+            <p class="label">▶ STAGE 1 · ABOUT</p>
+            <p class="lead">I'm Sean Janssenn C. Lorico, a Computer Engineering student at Cebu Institute of Technology — University.</p>
+            <p>I'm especially drawn to software development, system design, and creating user experiences that actually solve real problems.</p>
+            <p>I like taking apart problems the same way I like taking apart old gadgets — piece by piece, until I understand exactly how they work.</p>
+            <ul class="facts">
+              <li><span>BASED IN</span>Cebu, Philippines</li>
+              <li><span>STUDYING</span>BS Computer Engineering</li>
+              <li><span>FOCUS</span>Software &amp; system design</li>
+              <li><span>BUILDING NOW</span>QuestGo</li>
+              <li><span>STATUS</span><em class="ok">● OPEN TO PROJECTS</em></li>
+            </ul>
+          </div>
         </div>
       </article>
 
       <!-- PROJECTS: copy/paste a block to add more. Each needs a unique id starting with "proj-". -->
       <article class="win proj" id="proj-1">
-        <div class="win-bar"><span>PROJECT_01.EXE</span><span aria-hidden="true">01 / 04</span></div>
+        <div class="win-bar"><span>QUEST 01 · U-CONVERTIT</span><span aria-hidden="true">1/3</span></div>
         <div class="win-body proj-grid">
-          <div class="preview" data-n="01"><!-- <img src="assets/project-1.jpg" alt="Project One screenshot"> --></div>
+          <div class="preview has-img" data-n="01"><img src="assets/uconvertit.jpg" alt="Screenshot of U-ConvertIT" data-pixel="160"></div>
           <div class="proj-info">
-            <p class="meta">2026 — WEB DESIGN · DEVELOPMENT</p>
-            <h3>Project One</h3>
-            <p>One or two sentences on the problem, what you made, and the result. Mention a number if you have one.</p>
-            <ul class="tags"><li>REACT</li><li>GSAP</li><li>FIGMA</li></ul>
-            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+            <p class="meta"><em class="badge live">★ COMPLETE · LIVE</em></p>
+            <h3>U-ConvertIT</h3>
+            <p>An AI-powered academic productivity tool built for students. Features a Paraphraser, PDF Converter, Humanizer, Quiz Maker, and OCR, all in one platform. Built to make studying smarter and faster.</p>
+            <ul class="tags"><li>REACT</li><li>PYTHON</li><li>SUPABASE</li></ul>
+            <a class="open" href="https://u-convertit-frontend.vercel.app/" target="_blank" rel="noopener">▶ VIEW PROJECT</a>
           </div>
         </div>
       </article>
 
       <article class="win proj" id="proj-2">
-        <div class="win-bar"><span>PROJECT_02.EXE</span><span aria-hidden="true">02 / 04</span></div>
+        <div class="win-bar"><span>QUEST 02 · QUESTGO</span><span aria-hidden="true">2/3</span></div>
         <div class="win-body proj-grid">
-          <div class="preview" data-n="02"></div>
+          <div class="preview" data-n="02"><!-- add assets/questgo.jpg as <img ... data-pixel="160"> here (and class "has-img") when you have a screenshot --></div>
           <div class="proj-info">
-            <p class="meta">2025 — BRANDING · MOTION</p>
-            <h3>Project Two</h3>
-            <p>One or two sentences on the problem, what you made, and the result.</p>
-            <ul class="tags"><li>AFTER EFFECTS</li><li>ILLUSTRATOR</li></ul>
-            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+            <p class="meta"><em class="badge wip">◐ IN PROGRESS</em></p>
+            <h3>QuestGo</h3>
+            <p>QuestGo connects CIT-U students who need help with tasks to students willing to complete them for a reward. Students post, browse, and accept "Quests," then coordinate meetups through the platform. Each Quest runs Available → Accepted → In Progress → Completed, and unaccepted Quests expire after 30 minutes.</p>
+            <ul class="tags"><li>REACT</li><li>SUPABASE</li></ul>
+            <span class="open is-muted">STILL IN DEVELOPMENT</span>
           </div>
         </div>
       </article>
 
       <article class="win proj" id="proj-3">
-        <div class="win-bar"><span>PROJECT_03.EXE</span><span aria-hidden="true">03 / 04</span></div>
+        <div class="win-bar"><span>QUEST 03 · ???</span><span aria-hidden="true">3/3</span></div>
         <div class="win-body proj-grid">
-          <div class="preview" data-n="03"></div>
+          <div class="preview is-soon" data-n="??"></div>
           <div class="proj-info">
-            <p class="meta">2025 — APP · UI/UX</p>
-            <h3>Project Three</h3>
-            <p>One or two sentences on the problem, what you made, and the result.</p>
-            <ul class="tags"><li>TYPESCRIPT</li><li>NEXT.JS</li></ul>
-            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="win proj" id="proj-4">
-        <div class="win-bar"><span>PROJECT_04.EXE</span><span aria-hidden="true">04 / 04</span></div>
-        <div class="win-body proj-grid">
-          <div class="preview" data-n="04"></div>
-          <div class="proj-info">
-            <p class="meta">2024 — EXPERIMENT · 3D</p>
-            <h3>Project Four</h3>
-            <p>One or two sentences on the problem, what you made, and the result.</p>
-            <ul class="tags"><li>THREE.JS</li><li>BLENDER</li></ul>
-            <a class="open" href="#" target="_blank" rel="noopener">OPEN PROJECT ↗</a>
+            <p class="meta"><em class="badge soon">LOCKED</em></p>
+            <h3>Next build</h3>
+            <p>There's always something on the lift. New projects land here as soon as they're road-ready.</p>
+            <ul class="tags"><li>IN PLANNING</li></ul>
+            <span class="open is-muted">WATCH THIS SPACE</span>
           </div>
         </div>
       </article>
 
       <article class="win" id="skills">
-        <div class="win-bar"><span>SKILLS.SH</span><span aria-hidden="true">_ □ ×</span></div>
+        <div class="win-bar"><span>INVENTORY</span><span aria-hidden="true">8 ITEMS</span></div>
         <div class="win-body">
-          <p class="prompt">&gt; ls ~/toolkit</p>
-          <div class="cols">
-            <div><h4>/DESIGN</h4><ul><li>UI / UX</li><li>Branding</li><li>Motion</li><li>Figma</li></ul></div>
-            <div><h4>/CODE</h4><ul><li>HTML / CSS</li><li>JavaScript / TS</li><li>React</li><li>GSAP</li></ul></div>
-            <div><h4>/TOOLS</h4><ul><li>Git</li><li>Blender</li><li>Vite</li><li>Notion</li></ul></div>
-          </div>
+          <p class="label">▶ TECH STACK</p>
+          <p class="section-note">The languages, frameworks, and tools I build with.</p>
+          <h4 class="stack-h">LANGUAGES</h4>
+          <ul class="stack-grid">
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" alt="" data-pixel="16" crossorigin="anonymous">C</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" alt="" data-pixel="16" crossorigin="anonymous">C#</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Java</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Python</li>
+          </ul>
+          <h4 class="stack-h">FRAMEWORKS &amp; TOOLS</h4>
+          <ul class="stack-grid">
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="" data-pixel="16" crossorigin="anonymous">React</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Tailwind CSS</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Supabase</li>
+            <li><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" alt="" data-pixel="16" crossorigin="anonymous">Figma</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="win" id="hobbies">
+        <div class="win-bar"><span>SIDE QUESTS</span><span aria-hidden="true">6</span></div>
+        <div class="win-body">
+          <p class="label">▶ OFF THE CLOCK</p>
+          <p class="section-note">Engine off, still running. These are the things I lose hours to.</p>
+          <ul class="hobby-grid">
+            <li><span class="px-icon" data-icon="gaming"></span><b>GAMING</b><span>Late-night runs and one-more-match discipline problems.</span></li>
+            <li><span class="px-icon" data-icon="cooking"></span><b>COOKING</b><span>Recipes are just instructions with better rewards.</span></li>
+            <li><span class="px-icon" data-icon="editing"></span><b>EDITING</b><span>Cutting clips and colour until the timing feels right.</span></li>
+            <li><span class="px-icon" data-icon="sports"></span><b>SPORTS</b><span>Any excuse to be off a chair and on a court.</span></li>
+            <li><span class="px-icon" data-icon="reading"></span><b>READING</b><span>Fiction on the commute, documentation everywhere else.</span></li>
+            <li><span class="px-icon" data-icon="movies"></span><b>MOVIES</b><span>Thrillers, heists, and anything with a good chase scene.</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="win" id="education">
+        <div class="win-bar"><span>LEVELS CLEARED</span><span aria-hidden="true">3/4 ✓</span></div>
+        <div class="win-body">
+          <p class="label">▶ EDUCATION</p>
+          <ol class="edu">
+            <li class="now">
+              <img src="assets/cit.jpg" alt="Cebu Institute of Technology - University logo" data-pixel="28">
+              <div><p class="edu-status">▶ NOW PLAYING</p><p class="edu-years">2023 – PRESENT · COLLEGE</p><p class="edu-school">Cebu Institute of Technology — University</p><p class="edu-addr">N. Bacalso Avenue, Cebu City</p></div>
+            </li>
+            <li>
+              <img src="assets/act.jpg" alt="Asian College of Technology logo" data-pixel="28">
+              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2022 – 2023 · SENIOR HIGH</p><p class="edu-school">Asian College of Technology</p><p class="edu-addr">Bulacao, Talisay City, Cebu</p></div>
+            </li>
+            <li>
+              <img src="assets/divino.jpg" alt="Divino Amore Academy logo" data-pixel="28">
+              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2020 – 2022 · JUNIOR HIGH</p><p class="edu-school">Divino Amore Academy</p><p class="edu-addr">Mohon, Talisay City, Cebu</p></div>
+            </li>
+            <li>
+              <img src="assets/scho.jpg" alt="St. Scholastica's Academy logo" data-pixel="28">
+              <div><p class="edu-status">✓ CLEARED</p><p class="edu-years">2015 – 2019 · ELEMENTARY</p><p class="edu-school">St. Scholastica's Academy</p><p class="edu-addr">Lagtang, Talisay City, Cebu</p></div>
+            </li>
+          </ol>
         </div>
       </article>
 
       <article class="win" id="contact">
-        <div class="win-bar"><span>CONTACT.SH</span><span aria-hidden="true">_ □ ×</span></div>
+        <div class="win-bar"><span>SAVE POINT</span><span aria-hidden="true">♥♥♥</span></div>
         <div class="win-body">
-          <p class="prompt">&gt; ./contact.sh</p>
-          <p class="big">LET'S MAKE<br>SOMETHING.</p>
-          <a class="mail" href="mailto:hello@yourname.com">hello@yourname.com</a>
+          <p class="label">▶ CONTINUE?</p>
+          <p class="big">LET'S BUILD<br>SOMETHING.</p>
+          <p class="section-note">Got an idea, a project, or just want to talk shop? Pick a lane.</p>
+          <a class="mail" href="mailto:seanlorico9@gmail.com">seanlorico9@gmail.com</a>
           <ul class="links">
-            <li><a href="#" target="_blank" rel="noopener">GITHUB ↗</a></li>
-            <li><a href="#" target="_blank" rel="noopener">LINKEDIN ↗</a></li>
-            <li><a href="#" target="_blank" rel="noopener">INSTAGRAM ↗</a></li>
-            <li><a href="#" target="_blank" rel="noopener">RESUME.PDF ↗</a></li>
+            <li><a href="https://github.com/sean259" target="_blank" rel="noopener">▶ GITHUB</a></li>
+            <li><a href="https://www.facebook.com/sean.lorico.5" target="_blank" rel="noopener">▶ FACEBOOK</a></li>
+            <li><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=seanlorico9@gmail.com" target="_blank" rel="noopener">▶ GMAIL</a></li>
           </ul>
+          <p class="signoff">© 2026 SEAN LORICO — BUILDING. DESIGNING. CREATING.</p>
         </div>
       </article>
 
     </div>
     <div class="taskbar">
-      <span class="start">▣ START</span>
+      <span class="start">P1 SEAN</span>
+      <span class="hearts" aria-hidden="true">♥♥♥</span>
       <span class="task" id="task-label">BOOT.SYS</span>
       <span id="os-clock">00:00</span>
     </div>
@@ -405,7 +478,7 @@
 <div class="outro" id="outro">
   <p class="outro-kicker">SYSTEM HALTED. THANKS FOR STOPPING BY.</p>
   <p class="outro-title">SEE YOU<br>NEXT BOOT</p>
-  <a class="btn-link" href="mailto:hello@yourname.com">SAY HELLO</a>
+  <a class="btn-link" href="mailto:seanlorico9@gmail.com">SAY HELLO</a>
   <button class="btn-primary" id="rewind">REWIND&nbsp;&nbsp;↺</button>
 </div>
 

@@ -18,12 +18,19 @@
 - [x] 🤖 Responsive layout (tested at 1600×900 and 390×844 in a headless browser)
 
 ## Phase 1: Make it yours (content) ← YOU ARE HERE
-- [ ] 🙋 Replace every "YOUR NAME" / "Your City" / placeholder sentence in `index.html`
-- [ ] 🙋 Choose 3–5 real projects. For each: title, year, role, 1–2 sentence story, tags, link
-- [ ] 🙋 Export a screenshot per project (1600×1200 JPG/WebP) into `assets/` and uncomment the `<img>` in each `.preview`
-- [ ] 🙋 Real email and social links, plus `assets/resume.pdf`
-- [ ] 🤝 Rewrite your About text: send me rough notes and I'll tighten them
+- [x] 🤖 Imported content from the old site (github.com/sean259/Personal-Profile): name, bio, quote, spec sheet, U-ConvertIT, QuestGo, Next build, tech stack, hobbies, education with logos, contact links
+- [x] 🤖 Added two new windows: OFF_THE_CLOCK.TXT (hobbies) and EDUCATION.LOG
+- [x] 🤖 Ferrari image hung as an "AMA ITER." poster in the room; portrait in ABOUT_ME.TXT
+- [ ] 🙋 QuestGo screenshot → save as `assets/questgo.jpg` (see the comment in the QuestGo window)
+- [ ] 🙋 Optional: `assets/resume.pdf` and a LinkedIn link
+- [ ] 🤖 Shrink `assets/cit.jpg` (it's a 1882px, 585 KB PNG shown at 52px)
 - [ ] 🤖 Add or remove project windows: the timeline picks up any `.win.proj` automatically
+
+## Phase 1.5: The journey + game style ✅ DONE
+- [x] 🤖 After the boot: title card → pixel Sean walks from home past his school milestones (2015 → 2020 → 2022) and a jeepney → arrives at CIT-U → door opens → iris-out
+- [x] 🤖 Inside the computer is now a pixel game: dialog windows in a CIT-U hallway, Player Profile, Quests, Inventory, Side Quests, Levels Cleared, Save Point
+- [ ] 🤝 Tweak the sprite (hair, clothes, shoes) to look more like you. It's a 16×24 text map in `js/main.js` (`TOP`, `STRIDE`, `STAND`)
+- [ ] 🤖 Optional: background chiptune music for the walk
 
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
