@@ -73,6 +73,28 @@
 - [x] 🤖 Each chapter dives from Sean's eyes into the prop (same lens warp as the CRT dive): ID → Profile, notebook (pages turn as you scroll) → Quests, backpack → Inventory, window → Side quests, phone → Save point
 - [x] 🤖 Pulls back out between chapters; the 3D ID and phone have real faces (CIT-U badge, lock screen with app icons)
 
+## Phase 2.2: Content on the props ✅ DONE
+- [x] 🤖 New flow: CIT-U doors → corridor (stops, checks ID = Profile) → walks into CpE 301 → sits → notebook → laptop from the bag → window → phone
+- [x] 🤖 On desktop each chapter is mapped onto its 3D object (CSS homography, updated every frame): printed on the ID badge, written on the notebook pages, on the laptop screen, on the window glass, on the phone screen. It stays attached as the camera dives in and pulls out.
+- [x] 🤖 Smoother dives (eased twice, camera rolls to face each surface), ink fades between notebook pages; phones keep floating cards
+
+## Phase 2.3: ID, phone & chapter transitions ✅ DONE
+- [x] 🤖 ID twirls on the lanyard as he lifts it; the profile prints onto the badge top-to-bottom with a holographic shimmer (hidden while the badge faces away)
+- [x] 🤖 Phone: content fits the 3D screen inside the bezel, held by the base (thumb off the screen), glass glare, screen wakes from black and unlocks with a swipe-up, items pop in one by one
+- [x] 🤖 Cinematic chapter title band (number + kicker + serif title, gold rule) sweeps across between every chapter, with a whoosh
+
+## Phase 2.4: ID swing + phone home screen ✅ DONE
+- [x] 🤖 Removed the gold chapter title bands
+- [x] 🤖 ID: he grabs it and flips it upright; it swings from its clip while the profile shows (camera frames the resting badge so the swing reads)
+- [x] 🤖 Phone: a static home screen (clock, profile widget, GitHub / Facebook / Gmail app icons, email dock) on the same wallpaper as the 3D phone
+
+## Phase 2.5: Polish pass ✅ DONE
+- [x] 🤖 Phone held by its bottom edge (hand off the screen)
+- [x] 🤖 Smoother zooms: one continuous curved glide eased at both ends, damped camera, never clips through Sean's head
+- [x] 🤖 Orange tabby cat on the desk (breathing, tail flicks, ear twitches)
+- [x] 🤖 Title is now "Journey of Sean" (intro screen + street title card)
+- [x] 🤖 Chapters styled after their objects: premium ID badge (chip, barcode), notebook (tape, handwritten notes), laptop (desktop app window), window (handwritten daydream)
+
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
 - [ ] 🤖 Change the poster to show your logo or your best project

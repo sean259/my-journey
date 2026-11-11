@@ -292,10 +292,36 @@
     const handH = new T.Group(), handM = new T.Group(), handS = new T.Group();
     for (const [hg, len, wdt, c] of [[handH, 0.065, 0.01, '#15161c'], [handM, 0.1, 0.007, '#15161c'], [handS, 0.11, 0.003, '#d9472b']]) { clock.add(hg); hg.position.z = 0.02; box(hg, wdt, len, 0.004, mat(c), 0, len / 2, 0, { cast: false }); }
 
+    // an orange tabby loafing on the desk
+    const cat = new T.Group(); cat.position.set(0.43, 0.775, -0.63); cat.rotation.y = 0.35; scene.add(cat);
+    const fur = mat('#d98a3d', 0.85), furD = mat('#a8612a', 0.9), furL = mat('#f2d2a8', 0.85), pink = mat('#e89a9a', 0.7), catEye = mat('#1a1a14', 0.3);
+    const catBody = new T.Group(); cat.add(catBody);
+    mesh(catBody, new T.SphereGeometry(0.1, 28, 20), fur, 0, 0.065, 0, { s: [1.2, 0.7, 0.8] });
+    for (let i = 0; i < 4; i++) mesh(catBody, new T.TorusGeometry(0.084, 0.007, 6, 24, Math.PI), furD, -0.07 + i * 0.035, 0.07, 0, { r: [0, Math.PI / 2, 0], s: [1, 0.72, 0.85] });
+    mesh(catBody, new T.SphereGeometry(0.05, 18, 14), furL, 0.085, 0.045, 0, { s: [0.7, 0.8, 1.2] });
+    for (const z of [-0.035, 0.035]) mesh(catBody, new T.SphereGeometry(0.022, 12, 10), furL, 0.11, 0.012, z, { s: [1.3, 0.6, 1] });
+    const catHead = new T.Group(); catHead.position.set(0.1, 0.12, 0); cat.add(catHead);
+    mesh(catHead, new T.SphereGeometry(0.052, 24, 18), fur, 0, 0, 0, { s: [0.95, 0.88, 1.05] });
+    mesh(catHead, new T.SphereGeometry(0.024, 14, 10), furL, 0.04, -0.016, 0, { s: [0.8, 0.7, 1.2] });
+    mesh(catHead, new T.SphereGeometry(0.006, 8, 6), pink, 0.06, -0.004, 0);
+    for (const z of [-0.022, 0.022]) mesh(catHead, new T.CapsuleGeometry(0.004, 0.012, 4, 8), catEye, 0.045, 0.012, z, { r: [Math.PI / 2, 0, 0.15] });   // sleepy closed eyes
+    for (let i = 0; i < 3; i++) mesh(catHead, new T.BoxGeometry(0.008, 0.004, 0.012), furD, -0.01 + i * 0.012, 0.045, 0, { cast: false });
+    const ears = [];
+    for (const z of [-0.03, 0.03]) {
+      const ear = new T.Group(); ear.position.set(-0.005, 0.04, z); ear.rotation.x = z > 0 ? -0.25 : 0.25; catHead.add(ear);
+      mesh(ear, new T.ConeGeometry(0.019, 0.04, 4), fur, 0, 0.016, 0);
+      mesh(ear, new T.ConeGeometry(0.011, 0.026, 4), pink, 0.006, 0.012, 0);
+      ears.push(ear);
+    }
+    const tailPts = [[-0.11, 0.04, 0], [-0.14, 0.02, 0.05], [-0.1, 0.012, 0.1], [0, 0.01, 0.105], [0.07, 0.012, 0.09]];
+    const catTail = new T.Group(); cat.add(catTail);
+    const tailMesh = mesh(catTail, new T.TubeGeometry(new T.CatmullRomCurve3(tailPts.map((p) => new T.Vector3(...p))), 28, 0.014, 8, false), fur);
+    const tailTip = mesh(catTail, new T.SphereGeometry(0.016, 10, 8), furD, 0.07, 0.012, 0.09);
+
     const hemi = new T.HemisphereLight('#3a4a8a', '#0a0a12', 0.5); scene.add(hemi);
     const moon = new T.DirectionalLight('#8fa8ff', 0.35); moon.position.set(-2, 3, 1); scene.add(moon);
 
-    return { scene, screen, screenCanvas, screenTex, screenMat, screenGlow, lampLight, lampFill, bulb, led, rain, steam, handH, handM, handS,
+    return { scene, cat: { body: catBody, head: catHead, ears, tail: catTail, tailPts, tailMesh, tailTip }, screen, screenCanvas, screenTex, screenMat, screenGlow, lampLight, lampFill, bulb, led, rain, steam, handH, handM, handS,
       screenCenter: new T.Vector3(0, 0.775 + 0.33, -0.78 + 0.188), screenSize: [0.37, 0.278] };
   }
 
@@ -697,22 +723,19 @@
     // notebook: starts at the far edge of the desk, slides over, opens; pages can turn
     const pageTex = (title, n) => canvasTex(512, 640, (g, w, h) => {
       g.fillStyle = '#fffdf6'; g.fillRect(0, 0, w, h);
-      g.strokeStyle = 'rgba(80,120,200,.28)'; g.lineWidth = 2; for (let y = 110; y < h; y += 38) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
-      g.strokeStyle = 'rgba(200,60,60,.35)'; g.beginPath(); g.moveTo(70, 0); g.lineTo(70, h); g.stroke();
-      g.fillStyle = MAROON; g.font = 'italic 400 64px "Instrument Serif"'; g.fillText(title, 90, 90);
-      g.fillStyle = '#2b2b3a'; g.font = '400 30px Inter'; for (let i = 0; i < 8; i++) g.fillRect(90, 140 + i * 38, 120 + ((i * 97) % 260), 3);
-      if (n) { g.font = 'italic 400 120px "Instrument Serif"'; g.fillStyle = 'rgba(138,28,43,.18)'; g.fillText(n, 300, 560); }
+      g.strokeStyle = 'rgba(80,120,200,.14)'; g.lineWidth = 2; for (let y = 110; y < h; y += 38) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+      g.strokeStyle = 'rgba(200,60,60,.2)'; g.beginPath(); g.moveTo(70, 0); g.lineTo(70, h); g.stroke();
     });
     const nb = new T.Group(); scene.add(nb);
     const coverM = mat(MAROON, 0.6), paperL = mat('#fff', 0.9, 0, { map: pageTex('Quests', '') }), paperR = mat('#fff', 0.9, 0, { map: pageTex('Quest 01', '01') });
     const nbW = 0.34, nbD = 0.26;                                   // along z (width when open = 2*nbW/2), along x
     box(nb, nbD, 0.012, nbW / 2, coverM, 0, 0.006, nbW / 4);           // back cover (right half)
-    mesh(nb, new T.PlaneGeometry(nbD, nbW / 2), paperR, 0, 0.0135, nbW / 4, { r: [-Math.PI / 2, 0, -Math.PI / 2], cast: false });
+    mesh(nb, new T.PlaneGeometry(nbW / 2, nbD), paperR, 0, 0.0135, nbW / 4, { r: [-Math.PI / 2, 0, -Math.PI / 2], cast: false });
     const leftHinge = new T.Group(); nb.add(leftHinge);           // front cover + left page, hinged at the spine (z = 0)
     box(leftHinge, nbD, 0.012, nbW / 2, coverM, 0, 0.016, nbW / 4);
-    mesh(leftHinge, new T.PlaneGeometry(nbD, nbW / 2), paperL, 0, 0.0095, nbW / 4, { r: [Math.PI / 2, 0, -Math.PI / 2], cast: false });
+    mesh(leftHinge, new T.PlaneGeometry(nbW / 2, nbD), paperL, 0, 0.0095, nbW / 4, { r: [Math.PI / 2, 0, -Math.PI / 2], cast: false });
     const pageHinge = new T.Group(); nb.add(pageHinge);           // a turning page
-    const turnPage = mesh(pageHinge, new T.PlaneGeometry(nbD * 0.98, nbW / 2 * 0.98), mat('#fffdf6', 0.9, 0, { side: T.DoubleSide, map: pageTex('Quest 02', '02') }), 0, 0.015, nbW / 4, { r: [-Math.PI / 2, 0, -Math.PI / 2], cast: false });
+    const turnPage = mesh(pageHinge, new T.PlaneGeometry(nbW / 2 * 0.98, nbD * 0.98), mat('#fffdf6', 0.9, 0, { side: T.DoubleSide, map: pageTex('Quest 02', '02') }), 0, 0.015, nbW / 4, { r: [-Math.PI / 2, 0, -Math.PI / 2], cast: false });
     turnPage.visible = false;
     const pageTexs = [pageTex('Quest 01', '01'), pageTex('Quest 02', '02'), pageTex('Quest 03', '03')];
     // pencil + water bottle on the desk
@@ -725,12 +748,21 @@
     mesh(bag, roundedBox(0.32, 0.42, 0.18, 0.05), bagM, 0, 0.21, 0);
     mesh(bag, roundedBox(0.24, 0.16, 0.06, 0.02), bagD, 0, 0.13, 0.11);
     const items = new T.Group(); bag.add(items);
-    box(items, 0.22, 0.26, 0.02, mat('#2b2b33', 0.4, 0.3), -0.02, 0.38, -0.03);           // laptop
     box(items, 0.18, 0.24, 0.04, mat('#c0392b', 0.7), 0.06, 0.34, 0.02);                 // book
     mesh(items, new T.CylinderGeometry(0.02, 0.02, 0.2, 10), mat('#f4c542', 0.5), -0.09, 0.36, 0.04);   // pen case
     items.position.y = -0.14;
     const flap = new T.Group(); flap.position.set(0, 0.42, -0.09); bag.add(flap);
     mesh(flap, roundedBox(0.33, 0.04, 0.22, 0.015), bagD, 0, 0.0, 0.1);
+
+    // laptop: lives in the backpack until he takes it out (hinge on the far edge, screen faces him)
+    const laptop = new T.Group(); laptop.visible = false; scene.add(laptop);
+    const lapM = mat('#2e2f36', 0.35, 0.55), keyM = mat('#3f414b', 0.7, 0.2);
+    mesh(laptop, roundedBox(0.22, 0.016, 0.31, 0.006), lapM, 0, 0.008, 0);
+    box(laptop, 0.1, 0.002, 0.27, keyM, 0.04, 0.0165, 0, { cast: false });
+    box(laptop, 0.06, 0.002, 0.09, mat('#4a4c57', 0.5), -0.065, 0.0165, 0, { cast: false });
+    const lid = new T.Group(); lid.position.set(0.11, 0.016, 0); laptop.add(lid);
+    mesh(lid, roundedBox(0.22, 0.01, 0.31, 0.004), lapM, -0.11, 0.005, 0);
+    mesh(lid, new T.PlaneGeometry(0.2, 0.29), new T.MeshBasicMaterial({ color: '#f3eee4', toneMapped: false }), -0.11, -0.0012, 0, { r: [Math.PI / 2, 0, 0], cast: false });
 
     // light
     scene.add(new T.HemisphereLight('#fff6e8', '#b6a385', 0.7));
@@ -745,7 +777,7 @@
       const pl = new T.PointLight('#fff1d8', 0.25, 6, 2); pl.position.set(x, 3.1, z); scene.add(pl);
     }
 
-    return { scene, nb, leftHinge, pageHinge, turnPage, paperR, pageTexs, bag, flap, items, doorHinge, SEAT: [-0.35, 0.5], DOOR: [-5.6, 3.6] };
+    return { scene, nb, leftHinge, pageHinge, turnPage, paperR, pageTexs, bag, flap, items, doorHinge, laptop, lid, SEAT: [-0.35, 0.5], DOOR: [-5.6, 3.6] };
   }
 
   window.World3D = { buildRoom, buildStreet, buildHall, buildClassroom, DOOR_X, PATH_Z };

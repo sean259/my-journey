@@ -123,6 +123,7 @@
     tube(torso, [[0.0, 0.52, 0.075], [0.07, 0.46, 0.065], [0.118, 0.36, 0.025], [0.126, 0.3, 0.004]], 0.006, M.lany);
     tube(torso, [[0.0, 0.52, -0.075], [0.07, 0.46, -0.065], [0.118, 0.36, -0.025], [0.126, 0.3, -0.004]], 0.006, M.lany);
     const id = new T.Group(); id.position.set(0.13, 0.25, 0); id.rotation.z = -0.08; torso.add(id);
+    const idRest = new T.Group(); torso.add(idRest);   // the badge without its swing (the camera frames this)
     add(id, new T.BoxGeometry(0.006, 0.085, 0.062), M.card);
     add(id, new T.PlaneGeometry(0.062, 0.085), new T.MeshBasicMaterial({ map: (() => { const c = document.createElement('canvas'); c.width = 248; c.height = 340; const g = c.getContext('2d'); ((g, w, h) => {
       g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
@@ -174,7 +175,7 @@
       return { sh, elbow };
     }
     const armN = arm(1), armF = arm(-1);
-    const phone = new T.Group(); phone.position.set(0.03, -0.27, 0.02); phone.rotation.set(0, 0, 0.3); armN.elbow.add(phone);
+    const phone = new T.Group(); phone.position.set(0.035, -0.375, 0.02); phone.rotation.set(0, 0, 0.18); armN.elbow.add(phone);
     add(phone, roundedBox(0.012, 0.15, 0.075, 0.004), M.frame);
     add(phone, new T.PlaneGeometry(0.066, 0.138), new T.MeshBasicMaterial({ map: (() => { const c = document.createElement('canvas'); c.width = 264; c.height = 552; const g = c.getContext('2d'); ((g, w, h) => {
       const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#2d3368'); gr.addColorStop(0.55, '#8a1c2b'); gr.addColorStop(1, '#f4c542');
@@ -246,7 +247,22 @@
       head.rotation.z = lean * 0.6 + (w * Math.sin(ph * 4 * Math.PI) * 1.2 + (1 - w) * Math.sin(t * 0.6) * 2) * D2R;
       head.rotation.y = (1 - w) * Math.sin(t * 0.35) * 0.18 * (1 - Math.min(1, Math.abs(turn) * 2)) + turn;
       head.rotation.z += look * D2R;
-      id.position.set(0.13 + idLift * 0.09, 0.25 + idLift * 0.1, 0); id.rotation.z = -0.08 + idLift * 1.0;
+      {
+        // grab: the badge flips up and stands straight in front of him (face toward him)…
+        const k = Math.max(0, Math.min(1, idLift)), e = k * k * (3 - 2 * k), L = (a, b) => a + (b - a) * e;
+        id.position.set(L(0.13, 0.36), L(0.25, 0.4), 0);
+        id.rotation.set(0, 0, L(-0.08, Math.PI));
+        // …then swings gently from its clip while he reads it
+        idRest.position.copy(id.position); idRest.quaternion.copy(id.quaternion);
+        const held = Math.max(0, Math.min(1, (k - 0.85) / 0.15));
+        const sw = (Math.sin(t * 1.9) * 0.12 + Math.sin(t * 0.73 + 1) * 0.035) * held;
+        if (sw) {
+          const P = 0.06;   // clip sits just above the card's top edge
+          swOff.set(0, -P + P * Math.cos(sw), P * Math.sin(sw)).applyQuaternion(id.quaternion);
+          id.position.add(swOff);
+          swQ.setFromAxisAngle(X_AXIS, sw); id.quaternion.multiply(swQ);
+        }
+      }
       phone.scale.setScalar(Math.max(0.0001, Math.min(1, phoneOn)));
 
       const setLeg = (L, hip, knee, pitch) => {
@@ -269,9 +285,19 @@
 
     function headWorld(v) { return head.getWorldPosition(v); }
     update(0, performance.now());
+    // world-space corners (TL, TR, BR, BL as read by the viewer) of a face on +x of obj
+    const quad = (obj, x, w, h, arr) => {
+      obj.updateWorldMatrix(true, false);
+      [[x, -h / 2, -w / 2], [x, -h / 2, w / 2], [x, h / 2, w / 2], [x, h / 2, -w / 2]]
+        .forEach((p, i) => (arr[i] || (arr[i] = new T.Vector3())).set(p[0], p[1], p[2]).applyMatrix4(obj.matrixWorld));
+      return arr;
+    };
+    const swOff = new T.Vector3(), swQ = new T.Quaternion(), X_AXIS = new T.Vector3(1, 0, 0);
+    const idQuad = (arr = [], rest) => quad(rest ? idRest : id, 0.0042, 0.062, 0.085, arr);
+    const phoneQuad = (arr = []) => quad(phone, 0.0075, 0.066, 0.138, arr);
     const idWorld = (v) => id.localToWorld(v.set(0.01, 0, 0));
     const phoneWorld = (v) => phone.localToWorld(v.set(0.01, 0, 0));
-    return { root, update, headWorld, idWorld, phoneWorld, stride: STRIDE };
+    return { root, update, headWorld, idWorld, phoneWorld, idQuad, phoneQuad, stride: STRIDE };
   }
 
   window.Sean3D = { create, STRIDE };

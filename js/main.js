@@ -160,9 +160,10 @@
   /* --------------------------------------------------------
      STATE (driven by the scroll timeline)
      -------------------------------------------------------- */
-  const S = { room: 0, lamp: 0, monitor: 0, boot: 0, exit: 0, jeepIn: 0, board: 0, ride: 0, alight: 0, walk2: 0, enter: 0, walkIn: 0, sitDown: 0, idL: 0, nbk: 0, page: 0, bagL: 0, dream: 0, phone: 0, zoom: 0, focus: 0, pull: 0, screenOff: 0 };
+  const S = { room: 0, lamp: 0, monitor: 0, boot: 0, exit: 0, jeepIn: 0, board: 0, ride: 0, alight: 0, walk2: 0, enter: 0, walkIn: 0, sitDown: 0, idL: 0, nbk: 0, page: 0, bagL: 0, dream: 0, phone: 0, zoom: 0, focus: 0, corrWalk: 0, corrDoor: 0, lap: 0, pull: 0, screenOff: 0 };
   const look = { x: 0, y: 0 };
-  let room, street, hall, sean, seanHall, ready = false;
+  let room, street, hall, corr, sean, seanHall, seanCorr, ready = false;
+  const camUp = new THREE.Vector3(0, 1, 0), tmpA = new THREE.Vector3();
   // the commute: home → curb → jeepney → CIT-U
   const JX0 = -40, JX1 = 3.0, JX2 = World3D.DOOR_X - 6, LANE = 4.2, SEAT_X = -1.2, SEAT_Z = -0.62, SEAT_Y = 0.425, FLOOR = 0.84;
   function makePath(pts) {
@@ -184,6 +185,9 @@
   const P_ALIGHT = makePath([[JX2 + SEAT_X, FLOOR, LANE + SEAT_Z], [JX2 - 1.5, FLOOR, LANE], [JX2 - 2.4, FLOOR, LANE], [JX2 - 2.9, 0.55, LANE], [JX2 - 3.7, 0, LANE], [JX2 - 3.8, 0, 2.6], [JX2 - 3.6, 0.14, 1.4], [JX2 - 3.4, 0.14, 0.3]]);
   let P_CLASS = null;
   const P_WALK2 = makePath([[JX2 - 3.4, 0.14, 0.3], [World3D.DOOR_X, 0.14, 0.3]]);
+  // the CIT-U corridor: walk in, stop (ID check), then into classroom CpE 301 (door at x = 4)
+  const P_CORR1 = makePath([[-7, 0, 0.2], [0.6, 0, 0.2]]);
+  const P_CORR2 = makePath([[0.6, 0, 0.2], [3.3, 0, 0.35], [4, 0, -0.3], [4, 0, -1.5]]);
   const rideEase = (r) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(r));
   const rideInv = (u) => Math.acos(1 - 2 * clamp(u)) / Math.PI;
   const cards = $$('.stage > .win');
@@ -197,15 +201,35 @@
     bar.innerHTML = '<div><span class="rail-k">CHAPTER ' + n + '</span><h2 class="rail-t">' + (words.length ? words.join(' ') + ' ' : '') + '<em>' + last + '</em></h2></div>' +
       '<span class="rail-n" aria-hidden="true">' + n + '</span><span class="rail-track" aria-hidden="true"><i></i></span>';
   });
-  // fit every chapter to the screen (no inner scrolling, ever)
+  // each chapter is drawn onto a prop's surface (desktop): ID card, notebook spread, laptop, window, phone
+  const SURF = { id: { w: 600, a: 0.729 }, book: { w: 1180, a: 1.306 }, laptop: { w: 1100, a: 1.474 }, window: { w: 1150, a: 1.654 }, phone: { w: 330, a: 0.478 } };
+  const SURF_OF = { about: 'id', 'proj-1': 'book', 'proj-2': 'book', 'proj-3': 'book', skills: 'laptop', hobbies: 'window', contact: 'phone' };
+  const surfOn = () => !isMobile();
+  cards.forEach((c) => {
+    c.dataset.surf = SURF_OF[c.id] || 'window';
+    const w = document.createElement('div'); w.className = 'surf';
+    c.before(w); w.appendChild(c); c._surf = w;
+  });
   const stageEl = $('#stage');
   function fitCards() {
+    const on = surfOn();
+    document.body.classList.toggle('surf-on', on);
     const cs = getComputedStyle(stageEl);
     const availH = stageEl.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     for (const c of cards) {
-      c.style.zoom = 1;
-      const h = c.offsetHeight;
-      c.style.zoom = h > availH ? (availH / h).toFixed(3) : 1;
+      const el = c._surf;
+      c.style.zoom = 1; c.style.width = ''; c.style.height = '';
+      if (!on) {
+        el.style.width = el.style.height = el.style.transform = '';
+        const h = c.offsetHeight;
+        c.style.zoom = h > availH ? (availH / h).toFixed(3) : 1;
+        continue;
+      }
+      const { w: CW, a } = SURF[c.dataset.surf], CH = Math.round(CW / a);
+      el._w = CW; el._h = CH; el.style.width = CW + 'px'; el.style.height = CH + 'px';
+      c.style.width = CW + 'px';
+      const h = c.offsetHeight, z = h > CH ? CH / h : 1;
+      c.style.zoom = z.toFixed(4); c.style.width = (CW / z) + 'px'; c.style.height = (CH / z) + 'px';
     }
   }
   fitCards();
@@ -241,8 +265,10 @@
       room = World3D.buildRoom({ posterImage: poster });
       street = World3D.buildStreet();
       hall = World3D.buildClassroom();
+      corr = World3D.buildHall(['CpE 301', 'CpE 302', 'LAB 2', 'FACULTY']);
       sean = Sean3D.create(); sean.root.position.set(-4, 0, -3.9); street.scene.add(sean.root);
       seanHall = Sean3D.create(); hall.scene.add(seanHall.root);
+      seanCorr = Sean3D.create(); corr.scene.add(seanCorr.root);
       const pmrem = new THREE.PMREMGenerator(renderer);
       const env = (top, mid, bottom, k) => {
         const sc = new THREE.Scene();
@@ -257,9 +283,10 @@
       };
       street.scene.environment = env('#7fa6d8', '#f3d6bf', '#5a4c3e', 0.3);
       hall.scene.environment = env('#fff3e0', '#f1e2c8', '#7a6650', 0.24);
+      corr.scene.environment = env('#fff3e0', '#f1e2c8', '#7a6650', 0.26);
       P_CLASS = makePath([[-5.6, 0, 3.6], [-4.4, 0, 3.2], [-1.6, 0, 1.9], [hall.SEAT[0], 0, 1.3], [hall.SEAT[0], 0, hall.SEAT[1]]]);
       room.scene.environment = env('#1b2033', '#3a2a22', '#0b0b10', 0.5);
-      for (const sc of [room.scene, street.scene, hall.scene]) renderer.compile(sc, camera);
+      for (const sc of [room.scene, street.scene, hall.scene, corr.scene]) renderer.compile(sc, camera);
       gateProgress.target = 100;
       ready = true;
       $$('[data-enter]').forEach((b) => { b.disabled = false; });
@@ -329,47 +356,60 @@
     .to('.lb', { scaleY: 0, duration: 1.2, ease: 'power2.inOut' }, 'hall');
   flash(tl.labels.hall, '#fff6dc', 2.2);
 
-  // CLASSROOM — walk in, sit, then one action per chapter
-  tl.addLabel('cls', 'hall+=0.2')
-    .to(S, { walkIn: 1, duration: 5, ease: 'none' }, 'cls')
-    .to(S, { sitDown: 1, duration: 1.6, ease: 'power1.inOut' }, 'cls+=5');
+  // CORRIDOR — he walks in and checks his ID (profile); later he walks into his classroom
+  tl.addLabel('corr', 'hall+=0.2')
+    .to(S, { corrWalk: 1, duration: 5, ease: 'none' }, 'corr');
   const BEATS = {
     about: { set: { idL: 1 }, kind: 'id', focus: 0 },
     'proj-1': { set: { idL: 0, nbk: 1 }, kind: 'page0', act: 3.2, focus: 1 },
     'proj-2': { set: { page: 1 }, kind: 'page', act: 1.8 },
     'proj-3': { set: { page: 2 }, kind: 'page', act: 1.8 },
-    skills: { set: { nbk: 0, bagL: 1 }, kind: 'bag', act: 3, focus: 2 },
+    skills: { seq: [[{ nbk: 0, bagL: 1 }, 0, 1.6], [{ lap: 1 }, 1.2, 2.8]], kind: 'bag', act: 4.2, focus: 2 },
     hobbies: { set: { bagL: 0, dream: 1 }, kind: 'dream', act: 3, focus: 3 },
     contact: { set: { dream: 0, phone: 1 }, kind: 'phone', act: 3, focus: 4 }
   };
   const mob = () => isMobile();
+  const sv = (a, b) => () => (surfOn() ? a : typeof b === 'function' ? b() : b);   // surface value vs floating value
   const IN = {
-    id: [{ autoAlpha: 0, y: 140, scale: 0.55, rotationX: () => (mob() ? 0 : 30), filter: 'blur(18px)', transformOrigin: '30% 100%' }],
-    page0: [{ autoAlpha: 0, rotationY: () => (mob() ? 0 : -80), y: () => (mob() ? 80 : 0), filter: 'blur(6px)', transformOrigin: '0% 50%' }],
-    page: [{ autoAlpha: 0, rotationY: () => (mob() ? 0 : 25), x: () => (mob() ? 60 : 40), filter: 'blur(4px)', transformOrigin: '0% 50%' }],
-    bag: [{ autoAlpha: 0, y: 260, scale: 0.9, clipPath: 'inset(100% 0% 0% 0% round 30px)' }],
-    dream: [{ autoAlpha: 0, scale: 1.08, y: -40, filter: 'blur(26px)' }],
-    phone: [{ autoAlpha: 0, y: 320, rotationX: () => (mob() ? 0 : -25), scale: 0.85, transformOrigin: '50% 100%' }]
+    id: [{ autoAlpha: 0, y: sv(0, 140), scale: sv(1, 0.55), rotationX: sv(0, () => (mob() ? 0 : 30)), filter: sv('blur(0px) brightness(2.2)', 'blur(18px) brightness(1)'), clipPath: sv('inset(0% 0% 100% 0% round 0px)', 'inset(0% 0% 0% 0% round 0px)'), transformOrigin: '30% 100%' }],   // prints onto the badge
+    page0: [{ autoAlpha: 0, rotationY: sv(0, () => (mob() ? 0 : -80)), y: sv(12, () => (mob() ? 80 : 0)), filter: 'blur(6px) brightness(1)', transformOrigin: '0% 50%' }],
+    page: [{ autoAlpha: 0, rotationY: sv(0, () => (mob() ? 0 : 25)), x: sv(40, () => (mob() ? 60 : 40)), filter: sv('blur(3px) brightness(1)', 'blur(4px) brightness(1)'), transformOrigin: '0% 50%' }],
+    bag: [{ autoAlpha: 0, y: sv(0, 260), scale: sv(1.02, 0.9), filter: sv('blur(6px) brightness(1.8)', 'blur(0px) brightness(1)'), clipPath: sv('inset(0% 0% 0% 0% round 0px)', 'inset(100% 0% 0% 0% round 0px)') }],
+    dream: [{ autoAlpha: 0, scale: sv(1.04, 1.08), y: sv(0, -40), filter: sv('blur(16px) brightness(1.2)', 'blur(26px) brightness(1)') }],
+    phone: [{ autoAlpha: 0, y: sv(0, 320), rotationX: sv(0, () => (mob() ? 0 : -25)), scale: sv(1, 0.85), filter: sv('blur(0px) brightness(0)', 'blur(0px) brightness(1)'), transformOrigin: '50% 100%' }]   // screen wakes up
   };
-  const SHOWN = { autoAlpha: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotationY: 0, filter: 'blur(0px)', clipPath: 'inset(0% 0% 0% 0% round 30px)' };
+  const SHOWN = { autoAlpha: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotationY: 0, filter: 'blur(0px) brightness(1)', clipPath: 'inset(0% 0% 0% 0% round 0px)' };
   let current = null, prevKind = null;
-  const rest = [], cardInAt = [];
+  const rest = [], cardInAt = [], wipeAt = [];
   cards.forEach((card, i) => {
     const beat = BEATS[card.id] || { set: {}, kind: 'dream' };
     const label = `card${i}`, act = beat.act || 2.4;
-    tl.addLabel(label, i === 0 ? 'cls+=6.8' : undefined);
-    const ZOUT = 1.6, ZIN = 2.0, dive = beat.kind !== 'page';
+    if (card.id === 'proj-1') {
+      // leave the ID, walk down the corridor into CpE 301, sit down
+      tl.addLabel('toCls');
+      tl.to(S, { zoom: 0, duration: 1.8, ease: 'power2.inOut' }, 'toCls')
+        .to(current, { autoAlpha: 0, filter: 'blur(5px) brightness(1)', duration: 1.2, ease: 'power2.in' }, 'toCls+=0.3')
+        .to(S, { idL: 0, duration: 1.4, ease: 'sine.inOut' }, 'toCls+=0.7')
+        .to(S, { corrDoor: 1, duration: 4.8, ease: 'none' }, 'toCls+=1.5')
+        .addLabel('cls', 'toCls+=6.5');
+      flash(tl.labels.cls, '#fff6dc', 1.4);
+      tl.to(S, { walkIn: 1, duration: 5, ease: 'none' }, 'cls').to(S, { sitDown: 1, duration: 1.6, ease: 'power1.inOut' }, 'cls+=5');
+      current = null;
+    }
+    tl.addLabel(label, i === 0 ? 'corr+=5.6' : card.id === 'proj-1' ? 'cls+=6.8' : undefined);
+    const ZOUT = 2.0, ZIN = 2.6, dive = beat.kind !== 'page';
     let actAt = tl.labels[label];
-    if (dive && current) { tl.to(S, { zoom: 0, duration: ZOUT, ease: 'power2.inOut' }, label); actAt += ZOUT * 0.8; }
-    tl.to(S, { ...beat.set, duration: act, ease: 'sine.inOut' }, actAt);
-    if (dive) tl.set(S, { focus: beat.focus }, actAt).to(S, { zoom: 1, duration: ZIN, ease: 'power2.in' }, actAt + act - 0.4);
+    if (dive && current) { tl.to(S, { zoom: 0, duration: ZOUT, ease: 'none' }, label); actAt += ZOUT * 0.8; }
+    if (beat.seq) beat.seq.forEach(([v, off, dur]) => tl.to(S, { ...v, duration: dur, ease: 'sine.inOut' }, actAt + off));
+    else tl.to(S, { ...beat.set, duration: act, ease: 'sine.inOut' }, actAt);
+    if (dive) tl.set(S, { focus: beat.focus }, actAt).to(S, { zoom: 1, duration: ZIN, ease: 'none' }, actAt + act - 0.4);
     if (current) {
       const out = beat.kind === 'page'
-        ? { autoAlpha: 0, rotationY: () => (mob() ? 0 : -100), x: () => (mob() ? -60 : 0), transformOrigin: '0% 50%', duration: 1.3, ease: 'power2.in' }
-        : { autoAlpha: 0, scale: 0.95, y: -30, filter: 'blur(12px)', duration: 1.1, ease: 'power2.in' };
-      tl.to(current, out, label);
+        ? { autoAlpha: 0, rotationY: sv(0, () => (mob() ? 0 : -100)), x: sv(-50, () => (mob() ? -60 : 0)), filter: sv('blur(3px) brightness(1)', 'blur(0px) brightness(1)'), transformOrigin: '0% 50%', duration: 1.1, ease: 'power2.in' }
+        : { autoAlpha: 0, scale: sv(1, 0.95), y: sv(0, -30), filter: sv('blur(5px) brightness(1)', 'blur(12px) brightness(1)'), duration: 1.2, ease: 'power2.in' };
+      tl.to(current, out, beat.kind === 'page' ? label : tl.labels[label] + 0.25);
     }
-    const inAt = dive ? actAt + act - 0.4 + ZIN - 0.5 : tl.labels[label] + 0.7;
+    const inAt = dive ? actAt + act - 0.4 + ZIN * 0.62 : tl.labels[label] + 0.7;
     tl.fromTo(card, IN[beat.kind][0], { ...SHOWN, duration: beat.kind === 'page' ? 1.3 : 1.7, ease: 'power3.out', immediateRender: false }, inAt)
       .fromTo($$('.r', card), { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.07, ease: 'power2.out', immediateRender: false }, inAt + 0.45)
       .fromTo(card, { '--p': 0 }, { '--p': 1, duration: i === cards.length - 1 ? HOLD + 2 : HOLD, ease: 'none', immediateRender: false });
@@ -551,9 +591,77 @@
     room.screenTex.needsUpdate = true;
   }
 
+  const loc = (obj, pts, arr) => { obj.updateWorldMatrix(true, false); pts.forEach((p, i) => (arr[i] || (arr[i] = new THREE.Vector3())).set(p[0], p[1], p[2]).applyMatrix4(obj.matrixWorld)); return arr; };
+  const BOOK = [[0.124, 0.026, -0.162], [0.124, 0.026, 0.162], [-0.124, 0.026, 0.162], [-0.124, 0.026, -0.162]];
+  const LAPQ = [[-0.205, -0.003, -0.14], [-0.205, -0.003, 0.14], [-0.015, -0.003, 0.14], [-0.015, -0.003, -0.14]];
+  const WINQ = [[-1.29, 2.73, -4.93], [1.29, 2.73, -4.93], [1.29, 1.17, -4.93], [-1.29, 1.17, -4.93]];
+  const FOCUS_KIND = ['id', 'book', 'laptop', 'window', 'phone'];
+  function getQuad(kind, stage, arr, rest) {
+    if (kind === 'id') return (stage === 'corr' ? seanCorr : seanHall).idQuad(arr, rest);
+    if (kind === 'phone') return seanHall.phoneQuad(arr);
+    if (kind === 'book') return loc(hall.nb, BOOK, arr);
+    if (kind === 'laptop') return loc(hall.lid, LAPQ, arr);
+    WINQ.forEach((p, i) => (arr[i] || (arr[i] = new THREE.Vector3())).set(p[0], p[1], p[2]));
+    return arr;
+  }
+  // camera placement that looks straight at a quad and fills `fill` of the screen
+  function frameQuad(q, fill) {
+    const c = q[0].clone().add(q[1]).add(q[2]).add(q[3]).multiplyScalar(0.25);
+    const right = q[1].clone().sub(q[0]), down = q[3].clone().sub(q[0]);
+    const n = down.clone().cross(right).normalize();
+    const tanV = Math.tan(THREE.MathUtils.degToRad(baseFov) / 2);
+    const d = Math.max(down.length() / 2 / tanV, right.length() / 2 / (tanV * camera.aspect)) / fill;
+    return { pos: c.clone().addScaledVector(n, d), look: c, up: down.normalize().negate() };
+  }
+  const zq = [], mq = [];
+  // first-person dive: cut to his eyes, then glide until the prop's surface faces the screen
+  function applyZoom(out, who, stage) {
+    const z = S.zoom;
+    if (z <= 0.001) { zoomShade.style.opacity = '0'; return; }
+    const kind = FOCUS_KIND[Math.round(S.focus)];
+    const F = frameQuad(getQuad(kind, stage, zq, true), isMobile() ? 0.92 : 0.84);   // frame the resting badge so its swing reads on screen
+    const eye = who.headWorld(new THREE.Vector3()); eye.y += 0.02;
+    const fp = eye.clone().addScaledVector(F.look.clone().sub(eye).normalize(), kind === 'window' ? 0.5 : 0.32);   // just in front of his eyes
+    const u = z < 0.5 ? 4 * z * z * z : 1 - Math.pow(-2 * z + 2, 3) / 2;          // easeInOutCubic
+    const p0 = out.pos.clone(), w0 = (1 - u) * (1 - u), w1 = 2 * u * (1 - u), w2 = u * u;
+    out.pos.set(0, 0, 0).addScaledVector(p0, w0).addScaledVector(fp, w1).addScaledVector(F.pos, w2);   // quadratic Bézier
+    // never let the glide pass through his head
+    const hc = who.headWorld(new THREE.Vector3()); hc.y += 0.03;
+    const off = out.pos.clone().sub(hc), R = 0.26;
+    if (off.length() < R) { if (off.lengthSq() < 1e-6) off.copy(F.pos).sub(hc); out.pos.copy(hc).addScaledVector(off.normalize(), R); }
+    out.look.lerp(F.look, smooth(clamp(z / 0.7)));
+    camUp.lerp(F.up, smooth(clamp((z - 0.3) / 0.7))).normalize();
+    zoomShade.style.opacity = surfOn() ? '0' : (0.55 * smooth(clamp((z - 0.6) / 0.4))).toFixed(3);
+  }
+  // CSS matrix3d that maps a w×h box onto 4 screen points (TL, TR, BR, BL)
+  function quadMatrix(w, h, p) {
+    const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = p;
+    const dx1 = x1 - x2, dx2 = x3 - x2, dy1 = y1 - y2, dy2 = y3 - y2, sx = x0 - x1 + x2 - x3, sy = y0 - y1 + y2 - y3;
+    const den = dx1 * dy2 - dx2 * dy1;
+    const g = (sx * dy2 - dx2 * sy) / den, hh = (dx1 * sy - sx * dy1) / den;
+    const a = (x1 - x0 + g * x1) / w, b = (x3 - x0 + hh * x3) / h, d = (y1 - y0 + g * y1) / w, e = (y3 - y0 + hh * y3) / h;
+    return `matrix3d(${a},${d},0,${g / w},${b},${e},0,${hh / h},0,0,1,0,${x0},${y0},0,1)`;
+  }
+  const _pv = new THREE.Vector3();
+  function mapCards(stage) {
+    const on = surfOn() && (stage === 'corr' || stage === 'hall');
+    for (const c of cards) {
+      const el = c._surf;
+      if (!on) { if (el.style.transform) { el.style.transform = ''; el.style.visibility = ''; } continue; }
+      if (c.style.visibility === 'hidden') continue;
+      const q = getQuad(c.dataset.surf, stage, mq), pts = [];
+      let ok = true;
+      for (const v of q) { _pv.copy(v).project(camera); if (_pv.z > 1 || _pv.z < -1) { ok = false; break; } pts.push([(_pv.x + 1) / 2 * innerWidth, (1 - _pv.y) / 2 * innerHeight]); }
+      if (ok) { let area = 0; for (let k = 0; k < 4; k++) { const [ax, ay] = pts[k], [bx, by] = pts[(k + 1) % 4]; area += ax * by - bx * ay; } ok = area > 0; }
+      el.style.visibility = ok ? '' : 'hidden';
+      if (ok) el.style.transform = quadMatrix(el._w, el._h, pts);
+    }
+  }
+
   function currentStage(t) {
     if (t < L.street) return 'room';
     if (t < L.hall) return 'street';
+    if (t < L.cls) return 'corr';
     if (t < L.off + 1.6) return 'hall';
     return 'end';
   }
@@ -565,6 +673,7 @@
     const now = performance.now(), t = now / 1000;
     const stage = currentStage(tl.time());
     const out = { pos: camPos, look: camLook };
+    camUp.set(0, 1, 0);
     let scene;
     Sound.rain(stage === 'room' || stage === 'end');
     Sound.hum(stage === 'room' && S.monitor > 0.5);
@@ -585,6 +694,18 @@
         rp.setY(i, y); rp.setY(i + 1, y - 0.06);
       }
       rp.needsUpdate = true;
+      // the cat: slow breathing, lazy tail flicks, ear twitches, a sleepy nod
+      {
+        const c = room.cat;
+        c.body.scale.set(1, 1 + Math.sin(t * 1.6) * 0.035, 1 + Math.sin(t * 1.6) * 0.02);
+        c.head.rotation.z = Math.sin(t * 0.45) * 0.06 - 0.05; c.head.rotation.y = Math.sin(t * 0.3) * 0.12;
+        const tw = Math.max(0, Math.sin(t * 0.9) - 0.94) * 12;
+        c.ears[0].rotation.z = -tw * 0.4; c.ears[1].rotation.z = Math.max(0, Math.sin(t * 0.7 + 2) - 0.95) * -8;
+        const flick = Math.sin(t * 1.1) * 0.5 + Math.sin(t * 2.7) * 0.2;
+        const pts = c.tailPts.map((p, i) => new THREE.Vector3(p[0], p[1] + (i > 2 ? Math.max(0, flick) * 0.03 * (i - 2) : 0), p[2] + (i > 1 ? flick * 0.02 * (i - 1) : 0)));
+        c.tailMesh.geometry.dispose(); c.tailMesh.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 28, 0.014, 8, false);
+        c.tailTip.position.copy(pts[pts.length - 1]);
+      }
       room.steam.forEach((s, i) => { const k = ((t * 0.25 + i / 3) % 1); s.position.y = 0.9 + k * 0.18; s.material.opacity = 0.25 * Math.sin(k * Math.PI); s.position.x = -0.55 + Math.sin(t + i) * 0.015; });
       const d = new Date(), sec = d.getSeconds() + d.getMilliseconds() / 1000, min = d.getMinutes() + sec / 60, hr = (d.getHours() % 12) + min / 60;
       room.handS.rotation.z = -sec / 60 * Math.PI * 2; room.handM.rotation.z = -min / 60 * Math.PI * 2; room.handH.rotation.z = -hr / 12 * Math.PI * 2;
@@ -682,6 +803,21 @@
       sean.headWorld(tmp); tmp.y += 0.22; tmp.project(camera);
       const bx = `${((tmp.x + 1) / 2) * innerWidth + 14}px`, by = `${((1 - tmp.y) / 2) * innerHeight - 48}px`;
       bubble.style.left = bx; bubble.style.top = by; bubble2.style.left = bx; bubble2.style.top = by;
+    } else if (stage === 'corr') {
+      scene = corr.scene;
+      const dx = corr.doors[0];
+      let p, yaw, walked;
+      if (S.corrDoor > 0) { p = P_CORR2.at(P_CORR2.L * S.corrDoor); yaw = p.yaw; walked = P_CORR1.L + P_CORR2.L * S.corrDoor; }
+      else { p = P_CORR1.at(P_CORR1.L * S.corrWalk); yaw = S.corrWalk >= 1 ? -0.35 : p.yaw; walked = P_CORR1.L * S.corrWalk; }
+      seanCorr.root.position.set(p.x, 0, p.z);
+      seanCorr.update(walked, now, { onStep: Sound.step, face: yaw, pose: [{ w: smooth(S.idL), aN: 42, eN: 78, look: -20, idLift: 1 }] });
+      const mobi = isMobile();
+      out.pos.set(p.x + 1.4, 1.65, mobi ? 5.6 : 4.4); out.look.set(p.x + 0.5, 1.15, -0.6);
+      const toDoor = smooth(clamp(S.corrDoor * 1.4));
+      out.pos.lerp(V(dx + 0.9, 1.7, 3.0), toDoor); out.look.lerp(V(dx, 1.3, -1.6), toDoor);
+      out.pos.x += look.x * 0.1; out.pos.y += look.y * 0.06;
+      applyZoom(out, seanCorr, 'corr');
+      corr.key.position.set(p.x + 4, 7, 6); corr.key.target.position.set(p.x + 2, 0, 0); corr.warm.position.set(p.x + 1, 2.6, 1.5);
     } else {
       scene = hall.scene;
       const H = hall, [SX, SZ] = H.SEAT, mobi = isMobile();
@@ -692,7 +828,8 @@
       const pose = [
         { w: smooth(S.idL), aN: 30, eN: 108, look: -24, idLift: 1 },
         { w: smooth(clamp(S.nbk * 1.4)), aN: 44, eN: 40, aF: 44, eF: 40, look: -30, lean: 8 },
-        { w: smooth(S.bagL), turn: -0.8, look: -30, lean: 10, aN: 6, eN: 20 },
+        { w: smooth(S.bagL) * (1 - smooth(clamp((S.lap - 0.4) / 0.4))), turn: -0.8, look: -30, lean: 10, aN: 6, eN: 20 },
+        { w: smooth(clamp((S.lap - 0.45) / 0.55)), aN: 40, eN: 55, aF: 40, eF: 55, look: -14, lean: 5 },
         { w: smooth(S.dream), turn: 0.95, look: 8, lean: -7 },
         { w: smooth(S.phone), aN: 58, eN: 120, look: -16, phone: 1 }
       ];
@@ -711,6 +848,13 @@
       // backpack opens
       H.flap.rotation.x = -1.9 * smooth(S.bagL);
       H.items.position.y = -0.14 + 0.14 * smooth(S.bagL);
+      // laptop: lifted out of the bag in an arc, set on the desk, lid opens
+      const lm = smooth(clamp(S.lap / 0.55)), lo = smooth(clamp((S.lap - 0.5) / 0.5));
+      H.laptop.visible = S.bagL > 0.25 || S.lap > 0.001;
+      const from = H.bag.localToWorld(tmpA.set(0, 0.26, 0));
+      H.laptop.position.set(lerp(from.x, SX + 0.56, lm), lerp(from.y, 0.76, lm) + Math.sin(Math.PI * lm) * 0.3, lerp(from.z, SZ, lm));
+      H.laptop.rotation.set(0, lerp(0.5, 0, lm), lerp(-Math.PI / 2, 0, lm));
+      H.lid.rotation.z = -1.85 * lo;
       // camera: a shot per action, blended by the story
       const shot = (px, py, pz, lx, ly, lz) => [V(px, py, pz), V(lx, ly, lz)];
       const blend = (sh, wgt) => { tmp.lerp(sh[0], wgt); tmpLook.lerp(sh[1], wgt); };
@@ -721,31 +865,12 @@
       blend(shot(SX + 1.7, 1.3, SZ + 1.9 * k, SX + 0.1, 0.98, SZ), smooth(S.idL));
       blend(shot(SX - 0.95, 1.85, SZ + 1.35 * k, SX + 0.45, 0.72, SZ - 0.05), smooth(clamp(S.nbk * 1.4)));
       blend(shot(SX - 1.35, 1.15, SZ + 1.65 * k, SX - 0.05, 0.38, SZ + 0.6), smooth(S.bagL));
-      blend(shot(SX - 0.25, 1.4, SZ + 2.3 * k, SX + 0.35, 1.2, -3.5), smooth(S.dream));
+      blend(shot(SX - 0.55, 1.45, SZ + 0.95 * k, SX + 0.62, 0.9, SZ), smooth(clamp((S.lap - 0.45) / 0.55)));
+      blend(shot(SX + 0.95, 1.45, SZ + 1.25 * k, SX + 0.05, 1.4, -3.5), smooth(S.dream));   // his profile, gazing out
       blend(shot(SX - 0.3, 1.45, SZ + 1.05 * k, SX + 0.3, 1.0, SZ + 0.05), smooth(S.phone));
       out.pos.copy(tmp); out.look.copy(tmpLook);
       out.pos.x += look.x * 0.08; out.pos.y += look.y * 0.05;
-      // ---- first-person zoom: cut to his eyes, then push in until the prop fills the frame ----
-      const z = S.zoom;
-      if (z > 0.001) {
-        const P = new THREE.Vector3();
-        const fidx = Math.round(S.focus);
-        if (fidx === 0) seanHall.idWorld(P);
-        else if (fidx === 1) P.set(H.nb.position.x, 0.775, H.nb.position.z);
-        else if (fidx === 2) P.set(H.bag.position.x, 0.42, H.bag.position.z);
-        else if (fidx === 3) P.set(0, 1.95, -4.98);
-        else seanHall.phoneWorld(P);
-        const NEAR = [0.16, 0.42, 0.5, 2.4, 0.24][fidx];
-        const eye = seanHall.headWorld(new THREE.Vector3()); eye.y += 0.02;
-        const dir = P.clone().sub(eye).normalize();
-        const fp = eye.clone().addScaledVector(dir, 0.16);
-        const close = P.clone().addScaledVector(dir, -NEAR);
-        if (fidx === 1) close.set(P.x - 0.05, P.y + NEAR, P.z);          // straight down onto the notebook
-        const a = smooth(clamp(z / 0.4)), b = smooth(clamp((z - 0.3) / 0.7));
-        out.pos.lerp(fp, a).lerp(close, b);
-        out.look.lerp(P, a);
-        zoomShade.style.opacity = (0.55 * smooth(clamp((z - 0.6) / 0.4))).toFixed(3);
-      } else zoomShade.style.opacity = '0';
+      applyZoom(out, seanHall, 'hall');
     }
     // shift the frame so Sean sits beside the chapter cards (left on desktop, top on phones)
     const shift = stage === 'hall' ? smooth(clamp((S.walkIn - 0.85) / 0.15)) * (1 - smooth(clamp(S.zoom * 1.6))) : 0;
@@ -759,8 +884,18 @@
     fovKick += (clamp(v / 4000) * 3 - fovKick) * 0.08;
     camera.fov = baseFov + fovKick;
     camera.updateProjectionMatrix();
-    camera.position.copy(camPos);
-    camera.lookAt(camLook);
+    const dtc = Math.min(0.05, (now - (frame.lastCam || now)) / 1000); frame.lastCam = now;
+    if (!frame.cp || frame.stage !== stage || frame.cp.distanceTo(camPos) > 4) {
+      frame.cp = camPos.clone(); frame.cl = camLook.clone(); frame.cu = camUp.clone(); frame.stage = stage;
+    } else {
+      const k = 1 - Math.exp(-dtc * (stage === 'room' || stage === 'end' ? 14 : 9));
+      frame.cp.lerp(camPos, k); frame.cl.lerp(camLook, k); frame.cu.lerp(camUp, k).normalize();
+    }
+    camera.position.copy(frame.cp);
+    camera.up.copy(frame.cu);
+    camera.lookAt(frame.cl);
+    camera.updateMatrixWorld();
+    mapCards(stage);
     let warp = 0, bloom = 0.5, exposure = 1.0;
     if (stage === 'room') { warp = smooth(clamp((S.room - 0.82) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
     else if (stage === 'end') { warp = smooth(clamp((S.pull > 0 ? 0.18 - S.pull : 0) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
