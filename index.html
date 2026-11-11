@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0b0b0f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,700;100,800;100,900;125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,700;100,800;100,900;125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="locked">
@@ -49,10 +49,11 @@
 
 <!-- story overlays that sit on top of the 3D -->
 <div class="overlay" aria-hidden="true">
+  <div class="lb lb-t"></div><div class="lb lb-b"></div>
   <div class="title-card" id="title-card">
     <p class="tc-kicker">A JOURNEY BY</p>
-    <h2 class="tc-name">SEAN<br>LORICO</h2>
-    <p class="tc-sub">"Ama iter, non finem." Love the journey, not the destination.</p>
+    <h2 class="tc-name">Sean <em>Lorico</em></h2>
+    <p class="tc-sub"><em>Ama iter, non finem</em> — love the journey, not the destination.</p>
     <p class="tc-press">SCROLL TO START WALKING ↓</p>
   </div>
   <div class="caption" data-cap="home"><span>CEBU, PHILIPPINES</span><b>Every journey starts at home.</b></div>
@@ -206,7 +207,7 @@
     <div class="win-bar"><span>SAVE POINT</span><span aria-hidden="true">♥♥♥</span></div>
     <div class="win-body">
       <p class="label r">▶ CONTINUE?</p>
-      <p class="big r">LET'S BUILD<br>SOMETHING.</p>
+      <p class="big r">Let's build <em>something.</em></p>
       <p class="section-note r">Got an idea, a project, or just want to talk shop? Pick a lane.</p>
       <a class="mail r" href="mailto:seanlorico9@gmail.com">seanlorico9@gmail.com</a>
       <ul class="links r">
@@ -225,12 +226,13 @@
      ========================================================= -->
 <div class="outro" id="outro">
   <p class="outro-kicker">SYSTEM HALTED. THANKS FOR STOPPING BY.</p>
-  <p class="outro-title">SEE YOU<br>NEXT BOOT</p>
+  <p class="outro-title">See you <em>next boot.</em></p>
   <a class="btn-link" href="mailto:seanlorico9@gmail.com">SAY HELLO</a>
   <button class="btn-primary" id="rewind">REWIND&nbsp;&nbsp;↺</button>
 </div>
 
 <div class="track" id="track"></div>
+<div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i></div>
 
 <noscript><style>.gate-actions,.gate-note{display:none}</style><p class="noscript">This portfolio needs JavaScript to run.</p></noscript>
 
@@ -238,6 +240,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="js/post.js"></script>
 <script src="js/sean3d.js"></script>
 <script src="js/world3d.js"></script>
 <script src="js/main.js"></script>

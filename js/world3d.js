@@ -86,7 +86,7 @@
       ready: true,
       concrete: mat('#cfc8bc', 0.95), concreteDark: mat('#a59e92', 0.95), wallA: mat('#efe6d6', 0.9), wallB: mat('#f0d6ad', 0.9),
       wallC: mat('#cfe1d6', 0.9), wallD: mat('#d8c3c0', 0.9), wallE: mat('#c3d1e2', 0.9), roof: mat('#8f3a2f', 0.75), roofGrey: mat('#7d8288', 0.6, 0.3),
-      glass: mat('#a9d2f2', 0.18, 0.1, { emissive: new T.Color('#4f86b8'), emissiveIntensity: 0.35 }), frame: mat('#f7f7f2', 0.6), wood: mat('#7a4c2a', 0.7), woodDark: mat('#4f301a', 0.8),
+      glass: mat('#a9d2f2', 0.15, 0.2, { emissive: new T.Color('#4f86b8'), emissiveIntensity: 0.3, envMapIntensity: 1.2 }), frame: mat('#f7f7f2', 0.6), wood: mat('#7a4c2a', 0.7), woodDark: mat('#4f301a', 0.8),
       trunk: mat('#6b4428', 0.95), leafA: mat('#3f7d3c', 0.9), leafB: mat('#5b9a48', 0.9), leafC: mat('#7fb85e', 0.9), frond: mat('#4f8f42', 0.85, 0, { side: T.DoubleSide }),
       metal: mat('#5c6167', 0.5, 0.6), steel: mat('#9aa0a6', 0.35, 0.8), dark: mat('#1e1f24', 0.6), black: mat('#111', 0.5),
       maroon: mat(MAROON, 0.65), gold: mat(GOLD, 0.35, 0.5), white: mat('#ffffff', 0.6), pot: mat('#b5643c', 0.85), red: mat('#c0392b', 0.6),
@@ -104,7 +104,7 @@
     const mats = [m.leafA, m.leafB, m.leafC];
     for (let i = 0; i < 9; i++) {
       const r = (0.9 + rnd() * 0.8) * s;
-      mesh(crown, wobble(new T.IcosahedronGeometry(r, 2), 0.12), mats[i % 3], (rnd() - 0.5) * 2.6 * s, (rnd() * 1.6) * s, (rnd() - 0.5) * 2.2 * s);
+      mesh(crown, wobble(new T.SphereGeometry(r, 28, 20), 0.12), mats[i % 3], (rnd() - 0.5) * 2.6 * s, (rnd() * 1.6) * s, (rnd() - 0.5) * 2.2 * s);
     }
     return crown;
   }
@@ -140,13 +140,13 @@
   function plant(parent, x, z, s = 1, y0 = 0) {
     const m = materials();
     mesh(parent, new T.CylinderGeometry(0.22 * s, 0.16 * s, 0.4 * s, 16), m.pot, x, y0 + 0.2 * s, z);
-    for (let i = 0; i < 4; i++) mesh(parent, wobble(new T.IcosahedronGeometry(0.22 * s, 1), 0.15), [m.leafA, m.leafB, m.leafC][i % 3], x + (rnd() - 0.5) * 0.3 * s, y0 + (0.5 + rnd() * 0.3) * s, z + (rnd() - 0.5) * 0.3 * s);
+    for (let i = 0; i < 4; i++) mesh(parent, wobble(new T.SphereGeometry(0.22 * s, 28, 20), 0.15), [m.leafA, m.leafB, m.leafC][i % 3], x + (rnd() - 0.5) * 0.3 * s, y0 + (0.5 + rnd() * 0.3) * s, z + (rnd() - 0.5) * 0.3 * s);
   }
 
   function windowPane(parent, x, y, z, w, h, opts = {}) {
     const m = materials();
     box(parent, w + 0.12, h + 0.12, 0.08, opts.frameMat || m.frame, x, y, z);
-    box(parent, w, h, 0.1, m.glass, x, y, z + 0.01, { cast: false });
+    box(parent, w, h, 0.1, m.glass, x, y, z + 0.01, { cast: false, receive: false });
     if (opts.bars) for (let i = 1; i < 5; i++) box(parent, 0.025, h, 0.03, m.black, x - w / 2 + (w / 5) * i, y, z + 0.08);
     box(parent, w + 0.24, 0.06, 0.18, m.concreteDark, x, y - h / 2 - 0.08, z + 0.06);
   }
@@ -494,7 +494,7 @@
       // door + frame + room sign
       box(scene, 1.5, 2.6, 0.1, m.woodDark, x, 1.3, -1.55);
       box(scene, 1.3, 2.45, 0.08, m.wood, x, 1.23, -1.5);
-      box(scene, 0.55, 0.5, 0.09, m.glass, x, 1.75, -1.49, { cast: false });
+      box(scene, 0.55, 0.5, 0.09, m.glass, x, 1.75, -1.49, { cast: false, receive: false });
       box(scene, 0.06, 0.22, 0.06, m.gold, x + 0.48, 1.15, -1.44);
       const tex = label(name, { w: 1024, h: 220, bg: '#fffaf0', fg: MAROON, font: '900 104px Archivo', border: MAROON, radius: 18 });
       mesh(scene, new T.PlaneGeometry(1.7, 0.36), mat('#fff', 0.6, 0, { map: tex }), x, 2.85, -1.54, { cast: false });

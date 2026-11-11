@@ -44,6 +44,13 @@
 - [x] 🤖 Snapping (cards never stop half-open), chapter menu, progress bar, camera widens slightly when scrolling fast
 - [ ] 🙋 Optional: a rigged, photoreal character from Mixamo (.glb). The skeleton code can drive it.
 
+## Phase 1.7: Premium finish ✅ DONE
+- [x] 🤖 Film-style finishing pass (`js/post.js`): soft glow, filmic color grade, grain, vignette, color fringing, lens warp during the camera dives
+- [x] 🤖 Environment reflections, smooth foliage, softer exposure
+- [x] 🤖 Editorial typography (Instrument Serif + Inter), frosted cards, cinema letterbox, custom cursor, loading counter, refined chapter nav
+- [x] 🤖 `?lite` URL switch skips the finishing pass on weak devices
+- [ ] 🤖 Auto-switch to lite mode when the frame rate drops
+
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
 - [ ] 🤖 Change the poster to show your logo or your best project

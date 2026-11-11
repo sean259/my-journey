@@ -129,17 +129,19 @@
   }
   renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile() ? 1.5 : 1.75));
   renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  const LITE = /[?&]lite/.test(location.search);       // ?lite = skip the film finish (low-end devices)
+  renderer.toneMapping = LITE ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;   // otherwise tone mapping happens in js/post.js
+  const post = Post.create(renderer);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.03, 600);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.06, 600);
   let baseFov = 40;
   function resize() {
     renderer.setSize(innerWidth, innerHeight, false);
     camera.aspect = innerWidth / innerHeight;
     baseFov = isMobile() ? 52 : 38;
     camera.updateProjectionMatrix();
+    post.setSize();
   }
   resize();
   addEventListener('resize', resize);
@@ -169,17 +171,41 @@
       img.src = src;
     });
   }
-  Promise.all([document.fonts.ready, document.fonts.load('900 100px Archivo'), document.fonts.load('600 40px Inter'), document.fonts.load('40px VT323'), safeImage('assets/profile.jpg')])
-    .then(([, , , , poster]) => {
+  const gateProgress = { v: 0, target: 88 };
+  (function count() {
+    gateProgress.v += (gateProgress.target - gateProgress.v) * (gateProgress.target === 100 ? 0.12 : 0.02);
+    const n = Math.min(100, Math.round(gateProgress.v));
+    if (gateNote.dataset.ready && n >= 100) { gateNote.textContent = "SYSTEM IDLE — POWER'S ON WHEN YOU ARE"; return; }
+    gateNote.textContent = `LOADING THE WORLD — ${String(n).padStart(3, '0')}%`;
+    requestAnimationFrame(count);
+  })();
+  Promise.all([document.fonts.ready, document.fonts.load('italic 400 80px "Instrument Serif"'), document.fonts.load('900 100px Archivo'), document.fonts.load('600 40px Inter'), document.fonts.load('40px VT323'), safeImage('assets/profile.jpg')])
+    .then(([, , , , , poster]) => {
       room = World3D.buildRoom({ posterImage: poster });
       street = World3D.buildStreet();
       hall = World3D.buildHall(hallLabels);
       sean = Sean3D.create(); sean.root.position.set(START_X, 0, World3D.PATH_Z); street.scene.add(sean.root);
       seanHall = Sean3D.create(); hall.scene.add(seanHall.root);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      const env = (top, mid, bottom, k) => {
+        const sc = new THREE.Scene();
+        const m = new THREE.ShaderMaterial({
+          side: THREE.BackSide,
+          uniforms: { top: { value: new THREE.Color(top).multiplyScalar(k) }, mid: { value: new THREE.Color(mid).multiplyScalar(k) }, bottom: { value: new THREE.Color(bottom).multiplyScalar(k) } },
+          vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+          fragmentShader: 'uniform vec3 top, mid, bottom; varying vec3 vP; void main(){ float h = vP.y; vec3 c = h > 0.0 ? mix(mid, top, smoothstep(0.0, 0.7, h)) : mix(mid, bottom, smoothstep(0.0, 0.4, -h)); gl_FragColor = vec4(c, 1.0); }'
+        });
+        sc.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), m));
+        return pmrem.fromScene(sc, 0.03).texture;
+      };
+      street.scene.environment = env('#7fa6d8', '#f3d6bf', '#5a4c3e', 0.3);
+      hall.scene.environment = env('#fff3e0', '#f1e2c8', '#7a6650', 0.26);
+      room.scene.environment = env('#1b2033', '#3a2a22', '#0b0b10', 0.5);
       for (const sc of [room.scene, street.scene, hall.scene]) renderer.compile(sc, camera);
+      gateProgress.target = 100;
       ready = true;
       $$('[data-enter]').forEach((b) => { b.disabled = false; });
-      gateNote.textContent = "SYSTEM IDLE. POWER'S ON WHEN YOU ARE.";
+      gateNote.dataset.ready = '1';
     })
     .catch((e) => { console.error(e); gateNote.textContent = 'THE 3D WORLD FAILED TO LOAD. PLEASE REFRESH.'; });
 
@@ -207,9 +233,10 @@
     .addLabel('street', 'boot+=12');
   flash(tl.labels.street);
 
-  // STREET — title, then the walk
+  // STREET — title, then the walk (cinema bars in)
+  tl.fromTo('.lb', { scaleY: 0 }, { scaleY: 1, duration: 2, ease: 'power3.out', immediateRender: false }, 'street');
   tl.fromTo('#title-card', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 1.4, ease: 'power3.out', immediateRender: false }, 'street+=0.6')
-    .fromTo('.tc-name', { letterSpacing: '0.2em', filter: 'blur(14px)' }, { letterSpacing: '0em', filter: 'blur(0px)', duration: 1.8, ease: 'power3.out', immediateRender: false }, 'street+=0.6')
+    .fromTo('.tc-name', { letterSpacing: '0.12em', filter: 'blur(16px)', opacity: 0 }, { letterSpacing: '-0.01em', filter: 'blur(0px)', opacity: 1, duration: 2.2, ease: 'power3.out', immediateRender: false }, 'street+=0.6')
     .to({}, { duration: 2.5 })
     .addLabel('walk')
     .to('#title-card', { autoAlpha: 0, y: -40, filter: 'blur(8px)', duration: 1.2 }, 'walk')
@@ -228,7 +255,8 @@
     .fromTo('#bubble', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2)', immediateRender: false }, 'arrive+=0.3')
     .to('#bubble', { autoAlpha: 0, scale: 0.8, duration: 0.5 }, 'arrive+=2.6')
     .to(S, { enter: 1, duration: 7, ease: 'none' }, 'arrive+=0.6')
-    .addLabel('hall', 'arrive+=7.6');
+    .addLabel('hall', 'arrive+=7.6')
+    .to('.lb', { scaleY: 0, duration: 1.2, ease: 'power2.inOut' }, 'hall');
   flash(tl.labels.hall, '#fff6dc', 2.2);
 
   // HALLWAY — walk to each door, open its card
@@ -525,7 +553,13 @@
     camera.updateProjectionMatrix();
     camera.position.copy(camPos);
     camera.lookAt(camLook);
-    renderer.render(scene, camera);
+    let warp = 0, bloom = 0.5, exposure = 1.0;
+    if (stage === 'room') { warp = smooth(clamp((S.room - 0.82) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
+    else if (stage === 'end') { warp = smooth(clamp((S.pull > 0 ? 0.18 - S.pull : 0) / 0.18)) * 0.9; bloom = 0.85; exposure = 1.15; }
+    else if (stage === 'street') { warp = smooth(clamp((S.enter - 0.55) / 0.45)) * 0.8; bloom = 0.4 + 0.6 * S.enter; exposure = 0.9; }
+    else { bloom = 0.35; exposure = 0.86; }
+    if (LITE) { renderer.toneMappingExposure = exposure; renderer.setRenderTarget(null); renderer.render(scene, camera); }
+    else post.render(scene, camera, { time: t, warp, bloom, exposure });
   }
   gsap.ticker.add(frame);
 
@@ -566,4 +600,18 @@
   gsap.from('.mini-pc, .gate-sub, .gate-actions, .gate-note', { autoAlpha: 0, y: 16, duration: 0.9, stagger: 0.08, delay: 0.5 });
 
   $('#rewind').addEventListener('click', () => scrollToTime(0, 6));
+
+  /* --------------------------------------------------------
+     CUSTOM CURSOR (fine pointers only)
+     -------------------------------------------------------- */
+  const cur = $('#cursor');
+  if (cur && matchMedia('(pointer: fine)').matches) {
+    document.documentElement.classList.add('has-cursor');
+    const dot = $('.c-dot', cur), ring = $('.c-ring', cur);
+    const dx = gsap.quickTo(dot, 'x', { duration: 0.12, ease: 'power3' }), dy = gsap.quickTo(dot, 'y', { duration: 0.12, ease: 'power3' });
+    const rx = gsap.quickTo(ring, 'x', { duration: 0.5, ease: 'power3' }), ry = gsap.quickTo(ring, 'y', { duration: 0.5, ease: 'power3' });
+    addEventListener('mousemove', (e) => { dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); cur.classList.add('on'); });
+    document.addEventListener('mouseleave', () => cur.classList.remove('on'));
+    document.addEventListener('mouseover', (e) => cur.classList.toggle('hover', !!e.target.closest('a, button')));
+  }
 })();
