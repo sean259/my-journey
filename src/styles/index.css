@@ -1,0 +1,10 @@
+/* Load order = cascade order. Keep responsive.css after the section files it overrides. */
+@import './base.css';        /* tokens, reset, buttons, keyframes */
+@import './gate.css';        /* the "power on" intro */
+@import './overlays.css';    /* canvas, letterbox, captions, bubbles, flashes */
+@import './hud.css';         /* top bar, progress, chapter nav, custom cursor */
+@import './chapters.css';    /* the chapter cards ("spreads") */
+@import './outro.css';
+@import './responsive.css';  /* phones (≤ 760px) */
+@import './phone.css';       /* the Save point phone */
+@import './surfaces.css';    /* chapters printed on 3D props (desktop) */

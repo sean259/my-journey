@@ -1,0 +1,169 @@
+/* ==========================================================
+   CHAPTERS ON PROPS (desktop) — story/surfaces.js maps each card onto
+   its 3D surface every frame with a CSS matrix3d.
+   ========================================================== */
+body.surf-on .stage { display: block; padding: 0; perspective: none; }
+body.surf-on .stage > .surf { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+body.surf-on .stage .win { box-shadow: none; max-height: none; }
+body.surf-on .win::after { display: none; }
+
+/* ID card: profile printed on the badge */
+body.surf-on .win[data-surf="id"] { grid-template-columns: 1fr; grid-template-rows: auto 1fr; border-radius: 30px; background: #fffdf9; border: 0; }
+body.surf-on .win[data-surf="id"] .win-bar { flex-direction: row; align-items: center; padding: 26px 32px; border: 0; background: linear-gradient(90deg, #8a1c2b, #6e1420); }
+body.surf-on .win[data-surf="id"] .rail-k { color: #ffe08a; }
+body.surf-on .win[data-surf="id"] .rail-t { color: #fff; font-size: 38px; margin-top: 4px; }
+body.surf-on .win[data-surf="id"] .rail-t em { color: #ffe08a; }
+body.surf-on .win[data-surf="id"] .rail-n { color: rgba(255,255,255,.2); font-size: 64px; }
+body.surf-on .win[data-surf="id"] .rail-track { display: none; }
+body.surf-on .win[data-surf="id"] .win-body { padding: 28px 32px; align-self: start; }
+body.surf-on .win[data-surf="id"] .about-grid { grid-template-columns: 150px 1fr; gap: 22px; align-items: start; }
+body.surf-on .win[data-surf="id"] .facts { grid-template-columns: 1fr 1fr; gap: 0 18px; }
+
+/* notebook: ink on the open spread (left page = title + photo, right page = notes) */
+body.surf-on .win[data-surf="book"] {
+  background: transparent; border: 0; border-radius: 0; backdrop-filter: none; -webkit-backdrop-filter: none;
+  grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; column-gap: 13%; padding: 6% 6.5%; align-content: center;
+}
+body.surf-on .win[data-surf="book"] .win-bar { grid-column: 1; grid-row: 1; background: none; border: 0; padding: 0 0 22px; }
+body.surf-on .win[data-surf="book"] .rail-n, body.surf-on .win[data-surf="book"] .rail-track { display: none; }
+body.surf-on .win[data-surf="book"] .rail-t { font-size: 56px; }
+body.surf-on .win[data-surf="book"] .win-body, body.surf-on .win[data-surf="book"] .proj-grid { display: contents; }
+body.surf-on .win[data-surf="book"] .preview { grid-column: 1; grid-row: 2; align-self: start; border-radius: 6px; transform: rotate(-1.5deg); box-shadow: 0 10px 18px -10px rgba(0,0,0,.45); }
+body.surf-on .win[data-surf="book"] .preview::before { content: none; }
+body.surf-on .win[data-surf="book"] .proj-info { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+body.surf-on .win[data-surf="book"] .proj-info p:not(.meta) { color: #263056; font-size: 17px; }
+body.surf-on .win[data-surf="book"] .proj-info h3 { font-size: 64px; }
+
+/* laptop screen: the inventory app fills the display */
+body.surf-on .win[data-surf="laptop"] { border-radius: 4px; border: 0; background: #fbf8f2; }
+
+/* window: the daydream drawn on the glass */
+body.surf-on .win[data-surf="window"] { background: rgba(255,255,255,.4); border-radius: 6px; border: 1px solid rgba(255,255,255,.7); backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
+body.surf-on .win[data-surf="window"] .win-bar { background: rgba(255,255,255,.25); }
+body.surf-on .win[data-surf="window"] .hobby-grid li { background: rgba(255,255,255,.62); }
+
+/* phone: the save point IS the screen (the 3D phone is the bezel) */
+body.surf-on .win[data-surf="phone"] { display: block; background: transparent; border: 0; border-radius: 40px; backdrop-filter: none; -webkit-backdrop-filter: none; }
+body.surf-on .win[data-surf="phone"] .win-bar { display: none; }
+body.surf-on .win[data-surf="phone"] .win-body { display: block; padding: 0; height: 100%; }
+body.surf-on .win[data-surf="phone"] .phone { width: 100%; height: 100%; border-radius: 40px; box-shadow: none; padding: 30px 24px 40px; }
+
+/* ID: holographic shimmer across the badge */
+body.surf-on .win[data-surf="id"]::after {
+  display: block; content: ''; inset: -30%; mix-blend-mode: screen; opacity: .9;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,120,170,.22) 45%, rgba(120,220,255,.26) 50%, rgba(255,236,140,.22) 55%, transparent 62%);
+  animation: sheen 5.5s ease-in-out infinite;
+}
+
+/* phone: content fits the 3D screen exactly, under a sheet of glass */
+body.surf-on .win[data-surf="phone"], body.surf-on .win[data-surf="phone"] .phone { border-radius: 18px; }
+body.surf-on .win[data-surf="phone"] .phone { box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), inset 0 0 40px rgba(0,0,0,.08); }
+body.surf-on .win[data-surf="phone"] .phone::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(125deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 72%, rgba(255,255,255,.12) 100%);
+}
+body.surf-on .win[data-surf="phone"] .apps li { transition: transform .4s var(--ease); }
+
+
+/* phone home screen (matches the 3D phone's wallpaper) */
+.phone.home {
+  display: flex; flex-direction: column; color: #fff;
+  background: radial-gradient(120% 70% at 80% 0%, rgba(255,255,255,.18), transparent 60%), linear-gradient(172deg, #2d3368 0%, #6e1f3c 52%, #c0533a 80%, #f4c542 100%);
+}
+.phone.home .ph-status { color: #fff; margin-bottom: 18px; }
+.ph-clock { text-align: center; margin-bottom: 26px; }
+.ph-clock b { display: block; font-family: var(--sans); font-weight: 300; font-size: 68px; line-height: 1; letter-spacing: -.02em; }
+.ph-clock span { font-size: 13px; font-weight: 500; opacity: .85; }
+.ph-widget { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 22px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(10px); }
+.ph-widget img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; }
+.ph-widget b { display: block; font-size: 15px; font-weight: 600; }
+.ph-widget span { font-size: 11.5px; color: #b9f5cf; }
+.phone.home .apps { margin: 28px 0 0; }
+.phone.home .apps a { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+.ph-dock {
+  margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 26px;
+  background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(10px);
+  color: #fff; text-decoration: none; font-size: 12.5px; font-weight: 500;
+}
+.ph-dot { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #fff; color: #8a1c2b; font-size: 14px; }
+.phone.home .ph-bar { background: rgba(255,255,255,.85); }
+.phone.home .ph-notch { background: #000; }
+
+/* ==========================================================
+   CHAPTER STYLES THAT MATCH THEIR OBJECTS (desktop surfaces)
+   ========================================================== */
+.id-foot, .nb-note { display: none; }
+:root { --hand: 'Caveat', 'Segoe Print', cursive; }
+
+/* ID — a proper premium badge */
+body.surf-on .win[data-surf="id"] .win-bar { background: radial-gradient(120% 140% at 0% 0%, #a3283a 0%, #6e1420 60%, #4d0e18 100%); position: relative; }
+body.surf-on .win[data-surf="id"] .win-bar::after {
+  content: ''; position: absolute; right: 120px; top: 50%; translate: 0 -50%; width: 46px; height: 34px; border-radius: 7px;
+  background: linear-gradient(135deg, #f7e3a1, #c9a24a 45%, #f3d98b 60%, #b88d36); box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+}
+body.surf-on .win[data-surf="id"] .portrait img { border-radius: 10px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px rgba(138,28,43,.25); }
+body.surf-on .win[data-surf="id"] .id-foot {
+  display: flex; align-items: center; gap: 14px; margin-top: 18px; padding-top: 14px; border-top: 1px dashed rgba(23,21,28,.18);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .22em; color: #8a8295;
+}
+.id-bars { width: 120px; height: 26px; background: repeating-linear-gradient(90deg, #17151c 0 2px, transparent 2px 4px, #17151c 4px 5px, transparent 5px 8px, #17151c 8px 11px, transparent 11px 13px); }
+.id-foot b { margin-left: auto; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 22px; letter-spacing: 0; color: var(--maroon); }
+
+/* notebook — ink, tape and margin notes */
+body.surf-on .win[data-surf="book"] .rail-k { font-family: var(--hand); font-size: 24px; letter-spacing: 0; color: #2b4a8f; }
+body.surf-on .win[data-surf="book"] .rail-t { font-family: var(--serif); color: #1c2a55; }
+body.surf-on .win[data-surf="book"] .rail-t em { color: var(--maroon); }
+body.surf-on .win[data-surf="book"] .preview { overflow: visible; background: transparent; }
+body.surf-on .win[data-surf="book"] .preview img { border-radius: 4px; animation: none; box-shadow: 0 8px 16px -8px rgba(0,0,0,.4); }
+body.surf-on .win[data-surf="book"] .preview::before, body.surf-on .win[data-surf="book"] .preview.has-img::before {
+  content: ''; position: absolute; left: 50%; top: -14px; width: 110px; height: 28px; translate: -50% 0; rotate: -3deg; z-index: 1;
+  background: rgba(244,197,66,.55); box-shadow: 0 1px 2px rgba(0,0,0,.08); animation: none; inset: auto;
+  left: 50%; top: -14px;
+}
+body.surf-on .win[data-surf="book"] .preview.is-soon, body.surf-on .win[data-surf="book"] .preview:not(.has-img) { border: 2px dashed rgba(43,74,143,.35); border-radius: 8px; aspect-ratio: 4/3; }
+body.surf-on .win[data-surf="book"] .preview:not(.has-img)::after { color: rgba(43,74,143,.35); }
+body.surf-on .win[data-surf="book"] .nb-note {
+  display: block; grid-column: 1; grid-row: 2; align-self: end; justify-self: start; margin: 0 0 4px 6px; rotate: -4deg;
+  font-family: var(--hand); font-weight: 700; font-size: 34px; color: #2b4a8f;
+}
+body.surf-on .win[data-surf="book"] .nb-note::before { content: '↖ '; }
+body.surf-on .win[data-surf="book"] .proj-info h3 { color: #1c2a55; }
+body.surf-on .win[data-surf="book"] .tags li { border-color: rgba(43,74,143,.35); color: #2b4a8f; font-family: var(--hand); font-size: 22px; letter-spacing: 0; padding: 0 12px; }
+body.surf-on .win[data-surf="book"] .badge { font-family: var(--hand); font-size: 24px; letter-spacing: 0; padding: 2px 14px; text-transform: none; }
+
+/* laptop — a desktop app window on a wallpaper */
+body.surf-on .win[data-surf="laptop"] {
+  display: block; padding: 44px 46px 46px;
+  background: radial-gradient(80% 90% at 15% 10%, #f0b48a 0%, transparent 60%), radial-gradient(80% 90% at 90% 100%, #8a1c2b 0%, transparent 65%), linear-gradient(160deg, #2d3368, #5a2340);
+}
+body.surf-on .win[data-surf="laptop"]::before {
+  content: 'Inventory      File      Edit      View      Window'; position: absolute; left: 0; right: 0; top: 0; height: 26px; padding: 0 18px;
+  display: flex; align-items: center; white-space: pre; font: 600 12px var(--sans); color: rgba(255,255,255,.9);
+  background: rgba(20,16,30,.35); backdrop-filter: blur(10px);
+}
+body.surf-on .win[data-surf="laptop"] .win-bar { display: none; }
+body.surf-on .win[data-surf="laptop"] .win-body {
+  position: relative; height: 100%; padding: 58px 40px 30px; border-radius: 16px;
+  background: rgba(255,252,246,.94); box-shadow: 0 30px 60px -20px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.5);
+}
+body.surf-on .win[data-surf="laptop"] .win-body::before {
+  content: ''; position: absolute; left: 18px; top: 16px; width: 12px; height: 12px; border-radius: 50%;
+  background: #ff5f57; box-shadow: 20px 0 #febc2e, 40px 0 #28c840;
+}
+body.surf-on .win[data-surf="laptop"] .win-body::after {
+  content: 'Inventory — Sean’s toolkit'; position: absolute; left: 0; right: 0; top: 12px; text-align: center; font: 600 13px var(--sans); color: #6b6478;
+}
+body.surf-on .win[data-surf="laptop"] .stack-grid li { flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 18px 10px; border-radius: 22px; }
+body.surf-on .win[data-surf="laptop"] .stack-grid img { width: 46px; height: 46px; padding: 8px; border-radius: 14px; background: #fff; box-shadow: 0 8px 18px -8px rgba(0,0,0,.35); }
+
+/* window — a daydream written on the glass */
+body.surf-on .win[data-surf="window"] { background: linear-gradient(180deg, rgba(255,236,214,.35), rgba(214,232,255,.3)); }
+body.surf-on .win[data-surf="window"] .rail-t { font-family: var(--hand); font-weight: 700; font-size: 58px; color: #fff; text-shadow: 0 2px 14px rgba(40,30,80,.35); }
+body.surf-on .win[data-surf="window"] .rail-t em { color: #ffe2b0; }
+body.surf-on .win[data-surf="window"] .rail-k, body.surf-on .win[data-surf="window"] .label { color: rgba(255,255,255,.85); }
+body.surf-on .win[data-surf="window"] .section-note { color: #fff; text-shadow: 0 2px 12px rgba(40,30,80,.4); }
+body.surf-on .win[data-surf="window"] .hobby-grid li { border-radius: 30px; background: rgba(255,255,255,.5); border-color: rgba(255,255,255,.65); animation: drift-y 6s ease-in-out infinite; }
+body.surf-on .win[data-surf="window"] .hobby-grid li:nth-child(2n) { animation-delay: -2s; }
+body.surf-on .win[data-surf="window"] .hobby-grid li:nth-child(3n) { animation-delay: -4s; }
+body.surf-on .win[data-surf="window"] .hobby-grid b { font-family: var(--hand); font-weight: 700; font-size: 34px; }
+@keyframes drift-y { 50% { transform: translateY(-6px); } }

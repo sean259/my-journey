@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,700;100,800;100,900;125,800;125,900&family=JetBrains+Mono:wght@400;500;700&family=VT323&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="/src/main.js"></script>
 </head>
 <body class="locked">
 
@@ -92,7 +92,7 @@
     <div class="win-bar"><span>PLAYER PROFILE</span><span aria-hidden="true">P1</span></div>
     <div class="win-body about-grid">
       <figure class="portrait r">
-        <img src="assets/profile-alt.jpg" alt="Portrait of Sean Lorico">
+        <img src="/src/assets/profile-alt.jpg" alt="Portrait of Sean Lorico">
         <figcaption>SEAN J. C. LORICO</figcaption>
       </figure>
       <div>
@@ -116,9 +116,9 @@
   <article class="win proj" id="proj-1" data-title="U-ConvertIT">
     <div class="win-bar"><span>QUEST 01 · U-CONVERTIT</span><span aria-hidden="true">1/3</span></div>
     <div class="win-body proj-grid">
-      <div class="preview has-img r" data-n="01"><img src="assets/uconvertit.jpg" alt="Screenshot of U-ConvertIT"></div>
+      <div class="preview has-img r" data-n="01"><img src="/src/assets/uconvertit.jpg" alt="Screenshot of U-ConvertIT"></div>
       <p class="nb-note" aria-hidden="true">live & used by students ✓</p>
-          <div class="proj-info">
+      <div class="proj-info">
         <p class="meta r"><em class="badge live">★ COMPLETE · LIVE</em></p>
         <h3 class="r">U-ConvertIT</h3>
         <p class="r">An AI-powered academic productivity tool built for students. Features a Paraphraser, PDF Converter, Humanizer, Quiz Maker, and OCR, all in one platform. Built to make studying smarter and faster.</p>
@@ -131,9 +131,9 @@
   <article class="win proj" id="proj-2" data-title="QuestGo">
     <div class="win-bar"><span>QUEST 02 · QUESTGO</span><span aria-hidden="true">2/3</span></div>
     <div class="win-body proj-grid">
-      <div class="preview r" data-n="02"><!-- add assets/questgo.jpg as an <img> here (and class "has-img") when you have a screenshot --></div>
+      <div class="preview r" data-n="02"><!-- add src/assets/questgo.jpg as an <img> here (and the class "has-img") when you have a screenshot --></div>
       <p class="nb-note" aria-hidden="true">building this now…</p>
-          <div class="proj-info">
+      <div class="proj-info">
         <p class="meta r"><em class="badge wip">◐ IN PROGRESS</em></p>
         <h3 class="r">QuestGo</h3>
         <p class="r">QuestGo connects CIT-U students who need help with tasks to students willing to complete them for a reward. Students post, browse, and accept "Quests," then coordinate meetups through the platform. Each Quest runs Available → Accepted → In Progress → Completed, and unaccepted Quests expire after 30 minutes.</p>
@@ -148,7 +148,7 @@
     <div class="win-body proj-grid">
       <div class="preview is-soon r" data-n="??"></div>
       <p class="nb-note" aria-hidden="true">ideas welcome!</p>
-          <div class="proj-info">
+      <div class="proj-info">
         <p class="meta r"><em class="badge soon">LOCKED</em></p>
         <h3 class="r">Next build</h3>
         <p class="r">There's always something on the lift. New projects land here as soon as they're road-ready.</p>
@@ -165,17 +165,17 @@
       <p class="section-note r">The languages, frameworks, and tools I build with.</p>
       <h4 class="stack-h r">LANGUAGES</h4>
       <ul class="stack-grid">
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" alt="">C</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg" alt="">C#</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" alt="">Java</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg" alt="">Python</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/c/c-original.svg" alt="">C</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/csharp/csharp-original.svg" alt="">C#</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/java/java-original.svg" alt="">Java</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/python/python-original.svg" alt="">Python</li>
       </ul>
       <h4 class="stack-h r">FRAMEWORKS &amp; TOOLS</h4>
       <ul class="stack-grid">
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="">React</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="">Tailwind CSS</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg" alt="">Supabase</li>
-        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg" alt="">Figma</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/react/react-original.svg" alt="">React</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/tailwindcss/tailwindcss-original.svg" alt="">Tailwind CSS</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/supabase/supabase-original.svg" alt="">Supabase</li>
+        <li class="r"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/figma/figma-original.svg" alt="">Figma</li>
       </ul>
     </div>
   </article>
@@ -203,7 +203,7 @@
         <div class="ph-status"><span>9:41</span><span class="ph-notch"></span><span>5G ▮▮▮</span></div>
         <div class="ph-clock"><b>9:41</b><span>Tuesday · Cebu</span></div>
         <div class="ph-widget">
-          <img src="assets/profile-alt.jpg" alt="">
+          <img src="/src/assets/profile-alt.jpg" alt="">
           <div><b>Sean Lorico</b><span>● Open to projects</span></div>
         </div>
         <ul class="apps">
@@ -232,15 +232,7 @@
 <div class="track" id="track"></div>
 <div class="cursor" id="cursor" aria-hidden="true"><i class="c-ring"></i><i class="c-dot"></i></div>
 
-<noscript><style>.gate-actions,.gate-note{display:none}</style><p class="noscript">This portfolio needs JavaScript to run.</p></noscript>
+<noscript><p class="noscript">This portfolio needs JavaScript to run.</p></noscript>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
-<script src="js/post.js"></script>
-<script src="js/sean3d.js"></script>
-<script src="js/world3d.js"></script>
-<script src="js/main.js"></script>
 </body>
 </html>

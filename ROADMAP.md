@@ -2,7 +2,7 @@
 
 **Concept:** a scroll-driven portfolio. Visitors arrive in a dark room at night with a CRT computer on a desk. As they scroll, the lamp clicks on, the monitor powers up, and the camera flies into the screen. Inside, a retro OS boots and shows the portfolio window by window: About, Projects, Skills, Contact. At the end the screen powers off and the camera pulls back out. It's the same idea as Mind of Akira (enter-with-sound gate, scroll as the only control, sound design), but with a computer instead of a vinyl record.
 
-**Stack:** plain HTML/CSS/JS (no build step), GSAP + ScrollTrigger for the scroll timeline, Lenis for smooth scrolling, an inline SVG room (stays sharp at any zoom), and Web Audio for synthesized sound (no audio files).
+**Stack:** Vite + ES modules, Three.js for the 3D worlds, GSAP + ScrollTrigger for the scroll timeline, Lenis for smooth scrolling, and Web Audio for synthesized sound (no audio files). See `README.md` for how to run it and where things live.
 
 **Legend:** 🤖 = Claude can do it · 🙋 = only you can do it · 🤝 = together
 
@@ -23,8 +23,8 @@
 - [x] 🤖 Ferrari image hung as an "AMA ITER." poster in the room; portrait in ABOUT_ME.TXT
 - [ ] 🙋 QuestGo screenshot → save as `assets/questgo.jpg` (see the comment in the QuestGo window)
 - [ ] 🙋 Optional: `assets/resume.pdf` and a LinkedIn link
-- [ ] 🤖 Shrink `assets/cit.jpg` (it's a 1882px, 585 KB PNG shown at 52px)
-- [ ] 🤖 Add or remove project windows: the timeline picks up any `.win.proj` automatically
+- [x] 🤖 Removed `assets/cit.jpg` and the other unused school logos (the education chapter was cut)
+- [ ] 🤖 Add or remove project windows (see "Adding a project" in README.md)
 
 ## Phase 1.5: The journey + game style ✅ DONE
 - [x] 🤖 After the boot: title card → pixel Sean walks from home past his school milestones (2015 → 2020 → 2022) and a jeepney → arrives at CIT-U → door opens → iris-out
@@ -95,6 +95,11 @@
 - [x] 🤖 Title is now "Journey of Sean" (intro screen + street title card)
 - [x] 🤖 Chapters styled after their objects: premium ID badge (chip, barcode), notebook (tape, handwritten notes), laptop (desktop app window), window (handwritten daydream)
 
+## Phase 2.6: Codebase cleanup ✅ DONE
+- [x] 🤖 Moved to Vite: npm packages instead of CDN scripts, ES modules instead of globals, hashed and cached assets, hot reload while editing
+- [x] 🤖 Split the 960-line `main.js` and 784-line `world3d.js` into focused modules (one per scene, timeline, scroll, HUD and so on), split the stylesheet by section, removed dead CSS and unused images
+- [x] 🤖 ESLint (`npm run lint`), README with the project map
+
 ## Phase 2: Make the room yours (personalization)
 - [ ] 🤝 Swap room props for things that represent you (guitar, game console, posters of your work, a cat on the desk)
 - [ ] 🤖 Change the poster to show your logo or your best project
@@ -120,7 +125,7 @@
 - [ ] 🤝 Test on real devices: iPhone Safari, Android Chrome, a slow laptop. You test, I fix what you report
 
 ## Phase 6: Launch
-- [ ] 🤖 Put the project under git and write a README
+- [x] 🤖 Put the project under git and write a README
 - [ ] 🙋 Create a GitHub repo and push (I can run the commands once you're logged in with `gh`)
 - [ ] 🤝 Deploy free on **Netlify**, **Vercel** or **GitHub Pages** (static site, no server needed)
 - [ ] 🙋 Optional: buy a domain (`yourname.com`) and point it at the host
@@ -128,18 +133,5 @@
 
 ---
 
-## Where to edit things
-| What | Where |
-|---|---|
-| Name, text, projects, links | `index.html` (sections marked `EDIT`) |
-| Colors and fonts | top of `css/style.css` (`:root`) |
-| Scroll length / pacing | `VH_PER_BEAT` in `js/main.js` |
-| Order and timing of scenes | "MASTER TIMELINE" section in `js/main.js` |
-| Room drawing | the `<svg>` in `index.html` (1600×900 coordinate space) |
-| Sounds | `Sound` module at the top of `js/main.js` |
 
-## Run it locally
-Open `index.html` directly in a browser, or for a proper local server:
-```
-npx serve .
-```
+How to run the site and where to edit things: see `README.md`.

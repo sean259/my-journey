@@ -1,0 +1,48 @@
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 760px) {
+  .bar, .hud-bottom { font-size: 11px; letter-spacing: .14em; }
+  .gate .bar span:nth-child(2) { display: none; }
+  .gate-actions { flex-direction: column; }
+  .btn-primary { padding: 18px 28px; font-size: 13px; }
+  .btn-link { font-size: 13px; }
+  .gate-foot { left: 0; right: 0; text-align: center; font-size: 11px; }
+  .hint { font-size: 10px; }
+  #chapter { font-size: 10px; max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hud .sys { display: none; }
+  .chapters { bottom: auto; top: 56px; gap: 2px; padding: 8px 10px; }
+  .lb { height: 6vh; }
+  .caption { bottom: calc(6vh + 20px); }
+  .caption b { font-size: 30px; }
+  .tc-name { font-size: 64px; }
+  .proj-info h3 { font-size: 40px; }
+  .chapters button { width: 8px; height: 8px; }
+
+  /* chapters: rail becomes a header row, content stacks; zoom-to-fit keeps it on one screen */
+  .stage { align-items: center; justify-items: center; padding: 100px 12px 18px; }
+  .win { width: 100%; grid-template-columns: 1fr; border-radius: 24px; }
+  .win-bar { flex-direction: row; align-items: center; padding: 18px 20px 14px; border-right: 0; border-bottom: 1px solid rgba(23,21,28,.08); gap: 12px; }
+  .win-bar > div { display: flex; flex-direction: column; }
+  .rail-t { font-size: 26px; margin-top: 4px; }
+  .rail-n { font-size: 48px; }
+  .rail-track { top: auto; right: 0; width: auto; height: 2px; }
+  .rail-track i { transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+  .win-body { padding: 18px 20px 22px; font-size: 14px; }
+  .about-grid { grid-template-columns: 96px 1fr; gap: 16px; }
+  .lead { font-size: 20px; }
+  .facts { grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  .proj-grid { grid-template-columns: 1fr; gap: 16px; }
+  .preview { aspect-ratio: 16 / 8; }
+  .proj-info h3 { font-size: 40px; }
+  .proj-info > p:not(.meta) { font-size: 13.5px; }
+  .stack-grid { grid-template-columns: repeat(2, 1fr); }
+  .stack-grid li { flex-direction: row; align-items: center; padding: 12px; }
+  .hobby-grid { grid-template-columns: repeat(2, 1fr); }
+  .hobby-grid b { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mini-pc, .hint, .tc-press, .mini-cursor, .win::after, .preview img, .portrait img, .preview::before, .h-icon, .stack-grid img { animation: none !important; }
+}
+

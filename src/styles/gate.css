@@ -1,0 +1,27 @@
+/* ==========================================================
+   GATE
+   ========================================================== */
+.gate { position: fixed; inset: 0; z-index: 60; background: var(--bg); display: flex; flex-direction: column; }
+.gate-inner { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: clamp(18px, 3.2vh, 34px); padding: 0 16px; }
+.gate-title {
+  font-family: var(--display); font-weight: 900; font-stretch: 125%; font-variation-settings: 'wdth' 125;
+  font-size: clamp(48px, 10.5vw, 176px); line-height: .86; letter-spacing: -.01em; color: var(--ink);
+}
+.ln { display: block; overflow: hidden; padding-bottom: .02em; }
+.ln > span { display: block; }
+.gate-sub, .gate-note { font-size: clamp(12px, 1.1vw, 16px); letter-spacing: .2em; color: #a9a8a1; }
+.gate-actions { display: flex; gap: clamp(20px, 3vw, 48px); align-items: center; justify-content: center; flex-wrap: wrap; }
+.gate-foot { position: absolute; right: var(--pad); bottom: 20px; font-size: 13px; letter-spacing: .2em; color: var(--mute); }
+.gate-foot b { color: var(--ink); font-weight: 500; border-bottom: 1px solid var(--accent); }
+.mini-pc { width: 128px; animation: float 4.5s ease-in-out infinite; filter: drop-shadow(0 24px 40px rgba(0,0,0,.6)); }
+.mini-body { height: 100px; padding: 10px 10px 20px; border-radius: 12px; background: linear-gradient(145deg, #e6dec8, #b6ad94); }
+.mini-screen {
+  height: 100%; border-radius: 6px; padding: 8px; gap: 4px; display: flex; align-items: flex-end;
+  background: radial-gradient(circle at 50% 45%, #145233, #03100a 80%);
+  box-shadow: 0 0 34px rgba(141,255,181,.35), inset 0 0 14px rgba(0,0,0,.8);
+  font-family: 'VT323', monospace; color: var(--ph); font-size: 20px; line-height: 1;
+}
+.mini-cursor { width: 9px; height: 15px; background: var(--ph); animation: blink 1s steps(1) infinite; }
+.mini-neck { width: 44px; height: 9px; margin: 0 auto; background: #a39b83; }
+.mini-base { width: 80px; height: 7px; margin: 0 auto; background: #c8c0a8; border-radius: 4px; }
+

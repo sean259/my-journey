@@ -1,0 +1,15 @@
+/* ==========================================================
+   OUTRO
+   ========================================================== */
+.outro {
+  position: fixed; inset: 0; z-index: 30;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 26px; padding: 0 16px; text-align: center; visibility: hidden; opacity: 0;
+}
+.outro-kicker { font-size: 13px; letter-spacing: .25em; color: #cfccc4; }
+.outro-title { font-family: var(--serif); font-weight: 400; font-size: clamp(64px, 10vw, 170px); line-height: .9; letter-spacing: -.02em; color: var(--ink); text-shadow: 0 10px 60px rgba(0,0,0,.8); }
+
+.no-js .gate-actions, .no-js .gate-note { display: none; }
+.noscript { position: fixed; bottom: 20px; left: 0; right: 0; text-align: center; z-index: 70; letter-spacing: .2em; color: var(--mute); }
+.no-webgl .gate-note { color: #ff9a8a; }
+

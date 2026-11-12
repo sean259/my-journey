@@ -1,0 +1,66 @@
+/* ==========================================================
+   TOKENS
+   ========================================================== */
+:root {
+  --bg: #0b0b0f;
+  --ink: #ecebe4;
+  --mute: #8d8c86;
+  --accent: #5b5ff5;
+  --ph: #8dffb5;
+  --maroon: #8a1c2b;
+  --gold: #f4c542;
+  --card: #fffaf2;
+  --text: #2a2533;
+  --soft: #6b6478;
+
+  --display: 'Archivo', 'Arial Black', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --serif: 'Instrument Serif', 'Times New Roman', serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --pad: clamp(16px, 2vw, 24px);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--ink); font-family: var(--mono); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body.locked { overflow: hidden; height: 100vh; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button:disabled { opacity: .45; cursor: progress; }
+a { color: inherit; }
+ul, ol { list-style: none; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+.track { position: relative; width: 1px; height: 100vh; pointer-events: none; }
+
+.bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px var(--pad);
+  font-size: 13px; letter-spacing: .2em; color: var(--mute);
+}
+.btn-primary {
+  background: var(--ink); color: var(--bg);
+  border-radius: 999px; padding: 22px 36px;
+  font-size: 15px; letter-spacing: .2em;
+  transition: transform .4s var(--ease), background-color .3s ease, box-shadow .3s ease;
+}
+.btn-primary:not(:disabled):hover { background: var(--gold); transform: translateY(-2px); box-shadow: 0 0 40px rgba(244,197,66,.35); }
+.btn-link {
+  font-size: 15px; letter-spacing: .2em; color: #b9b8b1; text-decoration: none;
+  border-bottom: 1px solid currentColor; padding-bottom: 4px; transition: color .25s ease;
+}
+.btn-link:not(:disabled):hover { color: var(--gold); }
+
+
+/* ==========================================================
+   KEYFRAMES
+   ========================================================== */
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes breathe { 50% { opacity: .45; } }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes nudge { 50% { transform: translateY(4px); opacity: .6; } }
+

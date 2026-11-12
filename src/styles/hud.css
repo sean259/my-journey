@@ -1,0 +1,50 @@
+/* ==========================================================
+   HUD, PROGRESS & CHAPTER NAV
+   ========================================================== */
+.hud { position: fixed; top: 0; left: 0; right: 0; z-index: 40; visibility: hidden; pointer-events: none; mix-blend-mode: difference; color: #fff; }
+.hud.bar { font-size: 11px; letter-spacing: .3em; color: #fff; }
+.hud > * { pointer-events: auto; }
+.hud-btn { letter-spacing: .3em; color: #fff; transition: opacity .2s; }
+.hud-btn:hover { opacity: .6; }
+#chapter { color: #fff; }
+.hud-bottom {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; visibility: hidden;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px var(--pad); font-size: 11px; letter-spacing: .3em; pointer-events: none;
+  mix-blend-mode: difference; color: #fff;
+}
+.hint { animation: nudge 2s ease-in-out infinite; }
+.progress { position: fixed; left: 0; right: 0; top: 0; height: 2px; z-index: 45; visibility: hidden; background: rgba(255,255,255,.06); }
+.progress i { display: block; height: 100%; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #ffe2b0, #f4c542); }
+
+.chapters {
+  position: fixed; left: 50%; bottom: 22px; translate: -50% 0; z-index: 41;
+  display: flex; gap: 6px; visibility: hidden; padding: 10px 14px; border-radius: 999px;
+  background: rgba(20,18,30,.28); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid rgba(255,255,255,.14);
+}
+.chapters button { position: relative; width: 18px; height: 6px; display: grid; place-items: center; }
+.chapters button::before {
+  content: ''; width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,.45);
+  transition: width .5s var(--ease), background-color .3s ease;
+}
+.chapters button.on::before { width: 18px; background: #fff; }
+.chapters button span {
+  position: absolute; left: 50%; bottom: 22px;
+  white-space: nowrap; font-family: var(--mono); font-size: 10px; letter-spacing: .22em; color: #fff;
+  background: rgba(20,18,30,.75); backdrop-filter: blur(10px); padding: 7px 11px; border-radius: 999px;
+  opacity: 0; translate: -50% 6px; transition: opacity .25s ease, translate .35s var(--ease); pointer-events: none;
+}
+.chapters button:hover span, .chapters button:focus-visible span { opacity: 1; translate: -50% 0; }
+
+/* ==========================================================
+   CUSTOM CURSOR
+   ========================================================== */
+.cursor { position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none; opacity: 0; transition: opacity .3s; mix-blend-mode: difference; }
+.cursor.on { opacity: 1; }
+.cursor i { position: fixed; left: 0; top: 0; border-radius: 50%; }
+.c-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: #fff; }
+.c-ring { width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 1px solid rgba(255,255,255,.8); transition: transform .45s var(--ease), background-color .3s; }
+.cursor.hover .c-ring { transform: scale(1.7); background: rgba(255,255,255,.12); }
+.has-cursor, .has-cursor * { cursor: none !important; }
+
