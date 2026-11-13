@@ -1,0 +1,9 @@
+// Cloudflare Workers static-assets deploy: `npm run build` → `npx wrangler deploy` uploads ./dist
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "my-journey",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
