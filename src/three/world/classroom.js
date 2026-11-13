@@ -1,5 +1,5 @@
 import * as T from 'three';
-import { MAROON, GOLD, rnd, mat, mesh, box, canvasTex, roundedBox, glowTexture, materials } from './helpers.js';
+import { MAROON, GOLD, rnd, mat, mesh, box, canvasTex, roundedBox, glowTexture, materials, seatedPerson } from './helpers.js';
 
 /* ==========================================================
    THE CLASSROOM — where the portfolio chapters happen.
@@ -80,24 +80,17 @@ export function buildClassroom() {
   const seats = [];
   for (const sx of [-2.6, -0.35, 1.9]) for (const sz of [-3.3, -1.4, 0.5, 2.4]) { desk(sx, sz); seats.push([sx, sz]); }
 
-  // classmates (simple seated figures)
-  function classmate(sx, sz, shirt, hair, skin, lookDown) {
-    const p = new T.Group(); p.position.set(sx, 0.46, sz); scene.add(p);
-    const sm = mat(shirt, 0.8), km = mat(skin, 0.6), pm = mat('#2b2f3f', 0.8);
-    mesh(p, new T.CapsuleGeometry(0.15, 0.3, 6, 14), sm, 0, 0.38, 0, { s: [0.75, 1, 1] });
-    mesh(p, new T.SphereGeometry(0.11, 18, 14), km, 0.02, 0.8, 0, { s: [1, 1.1, 0.92] });
-    mesh(p, new T.SphereGeometry(0.117, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), mat(hair, 0.9), -0.01, 0.82, 0, { r: [0, 0, lookDown ? -0.4 : 0] });
-    box(p, 0.44, 0.13, 0.28, pm, 0.2, 0.04, 0);
-    box(p, 0.12, 0.44, 0.26, pm, 0.4, -0.2, 0);
-    for (const z of [-0.2, 0.2]) mesh(p, new T.CapsuleGeometry(0.045, 0.28, 4, 8), sm, 0.16, 0.36, z, { r: [0, 0, -1.1] });
-    box(scene, 0.22, 0.02, 0.3, mat('#fffaf0'), sx + 0.6, 0.77, sz);
-    return p;
+  // classmates in the CIT-U uniform, seated on the chair (top at y = 0.46) with forearms on the desk
+  const paperM = mat('#fffaf0');
+  function classmate(sx, sz, hair, skin, lookDown) {
+    seatedPerson(scene, sx, 0.46, sz, { hair, skin, seatH: 0.46, hands: 'desk', deskY: 0.3, tilt: lookDown ? 0.35 : 0.05, lanyard: true });
+    box(scene, 0.22, 0.004, 0.3, paperM, sx + 0.66, 0.762, sz, { cast: false });
   }
-  classmate(-2.6, -1.4, '#f4f4ef', '#1d140e', '#c98d6a', true);
-  classmate(1.9, -3.3, '#f4f4ef', '#2a1a10', '#b97a55', false);
-  classmate(-2.6, 2.4, '#f4f4ef', '#111', '#d4a07a', true);
-  classmate(1.9, 0.5, '#f4f4ef', '#3b2416', '#a86b48', false);
-  classmate(-0.35, -3.3, '#f4f4ef', '#1d140e', '#c98d6a', true);
+  classmate(-2.6, -1.4, '#1d140e', '#c98d6a', true);
+  classmate(1.9, -3.3, '#2a1a10', '#b97a55', false);
+  classmate(-2.6, 2.4, '#111', '#d4a07a', true);
+  classmate(1.9, 0.5, '#3b2416', '#a86b48', false);
+  classmate(-0.35, -3.3, '#1d140e', '#c98d6a', true);
 
   // --- Sean's props ---
   // notebook: starts at the far edge of the desk, slides over, opens; pages can turn
@@ -120,7 +113,9 @@ export function buildClassroom() {
   const pageTexs = [pageTex('Quest 01', '01'), pageTex('Quest 02', '02'), pageTex('Quest 03', '03')];
   // pencil + water bottle on the desk
   mesh(scene, new T.CylinderGeometry(0.005, 0.005, 0.17, 6), mat('#f4c542', 0.5), 0.55, 0.765, 0.88, { r: [Math.PI / 2, 0.4, 0] });
-  mesh(scene, new T.CylinderGeometry(0.035, 0.035, 0.22, 18), mat('#5bb3e8', 0.2, 0.1, { transparent: true, opacity: 0.85 }), 0.78, 0.87, 0.15);
+  // (desk top spans x 0.01–0.63, z 0.04–0.96 at y 0.76 — the bottle stands on its far corner)
+  mesh(scene, new T.CylinderGeometry(0.035, 0.035, 0.22, 18), mat('#5bb3e8', 0.2, 0.1, { transparent: true, opacity: 0.85 }), 0.52, 0.87, 0.14);
+  mesh(scene, new T.CylinderGeometry(0.024, 0.03, 0.035, 14), mat('#1f416f', 0.5), 0.52, 0.997, 0.14);   // cap
 
   // backpack on the floor by his chair, flap opens
   const bag = new T.Group(); bag.position.set(-0.25, 0, 1.05); bag.rotation.y = 0.5; scene.add(bag);
@@ -145,7 +140,7 @@ export function buildClassroom() {
   mesh(lid, new T.PlaneGeometry(0.2, 0.29), new T.MeshBasicMaterial({ color: '#f3eee4', toneMapped: false }), -0.11, -0.0012, 0, { r: [Math.PI / 2, 0, 0], cast: false });
 
   // light
-  scene.add(new T.HemisphereLight('#fff6e8', '#b6a385', 0.7));
+  scene.add(new T.HemisphereLight('#fff6e8', '#b6a385', 0.82));   // stands in for the ceiling lamps' fill
   const sun = new T.DirectionalLight('#fff0d4', 1.25);
   sun.position.set(2, 7, -9); sun.target.position.set(0, 0, 0.5);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
@@ -153,8 +148,7 @@ export function buildClassroom() {
   sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
   scene.add(sun, sun.target);
   for (const [x, z] of [[-2.5, -1], [2, -1], [-2.5, 2.4], [2, 2.4]]) {
-    box(scene, 1.4, 0.04, 0.3, new T.MeshBasicMaterial({ color: '#fffbea', toneMapped: false }), x, 3.37, z, { cast: false });
-    const pl = new T.PointLight('#fff1d8', 0.25, 6, 2); pl.position.set(x, 3.1, z); scene.add(pl);
+    box(scene, 1.4, 0.04, 0.3, new T.MeshBasicMaterial({ color: '#fffbea', toneMapped: false }), x, 3.37, z, { cast: false });   // lamp panels (glow only; 4 point lights here cost every pixel)
   }
 
   return { scene, nb, leftHinge, pageHinge, turnPage, paperR, pageTexs, bag, flap, items, doorHinge, laptop, lid, SEAT: [-0.35, 0.5], DOOR: [-5.6, 3.6] };

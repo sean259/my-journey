@@ -14,7 +14,7 @@ import { updateStreet } from './stages/street.js';
 import { updateCorridor } from './stages/corridor.js';
 import { updateClassroom } from './stages/classroom.js';
 
-export function createFrameLoop({ renderer, camera, post, view, tl, st, cards }) {
+export function createFrameLoop({ renderer, camera, post, view, adapt, tl, st, cards }) {
   const L = tl.labels;
   const stageAt = (t) => {
     if (t < L.street) return 'room';
@@ -31,6 +31,7 @@ export function createFrameLoop({ renderer, camera, post, view, tl, st, cards })
   return function frame() {
     if (!W.ready) return;
     const now = performance.now(), t = now / 1000;
+    adapt(now);
     const stage = stageAt(tl.time());
     out.up.set(0, 1, 0);
     Sound.rain(stage === 'room' || stage === 'end');

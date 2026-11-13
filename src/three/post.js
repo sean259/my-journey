@@ -9,6 +9,7 @@
    post.render(scene, camera, { warp, bloom, time });
    ========================================================== */
 import * as T from 'three';
+import { isMobile } from '../config.js';
 
 const VERT = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
 
@@ -63,7 +64,7 @@ function create(renderer) {
   // 24-bit depth (the default multisampled depth is only 16-bit → z-fighting on glass set into walls)
   let depthTexture;
   if (isGL2) { depthTexture = new T.DepthTexture(2, 2); depthTexture.type = T.UnsignedIntType; }
-  const main = new T.WebGLRenderTarget(2, 2, { type, samples: isGL2 ? 4 : 0, depthTexture });
+  const main = new T.WebGLRenderTarget(2, 2, { type, samples: isGL2 ? (isMobile() ? 2 : 4) : 0, depthTexture });
   const a = new T.WebGLRenderTarget(2, 2, { type });
   const b = new T.WebGLRenderTarget(2, 2, { type });
   const quadCam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);

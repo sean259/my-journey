@@ -183,3 +183,63 @@ export function house(parent, x, z, w, d, h, wall, opts = {}) {
   if (opts.aircon) box(g, 0.8, 0.5, 0.45, m.white, w / 2 - 1.2, 4.2, d / 2 + 0.25);
   return g;
 }
+
+/* ---------------- seated side characters ----------------
+   A jointed figure sitting on a seat whose top is at the group origin,
+   facing +X. Limbs run joint-to-joint so nothing floats or detaches.
+   seatH = seat top above the floor (feet land on it).
+   hands: 'desk' (forearms resting on a desk top `deskY` above the seat),
+   'lap', or 'wheel' (reaching forward to a steering wheel). */
+const _geo = new Map(), _mat = new Map();
+const geoOnce = (key, make) => _geo.get(key) || (_geo.set(key, make()), _geo.get(key));
+const matOnce = (color, rough = 0.8) => { const k = color + rough; return _mat.get(k) || (_mat.set(k, mat(color, rough)), _mat.get(k)); };
+const _up = new T.Vector3(0, 1, 0);
+function limb(parent, a, b, r, m) {
+  const d = new T.Vector3().subVectors(b, a), len = d.length();
+  const g = geoOnce(`cap${r}:${len.toFixed(3)}`, () => new T.CapsuleGeometry(r, len, 4, 10));
+  const me = mesh(parent, g, m, (a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+  me.quaternion.setFromUnitVectors(_up, d.normalize());
+  return me;
+}
+export function seatedPerson(parent, x, y, z, o = {}) {
+  const { face = 0, shirt = '#dde1e6', pants = '#303236', hair = '#1d140e', skin = '#c98d6a', seatH = 0.46, hands = 'lap', deskY = 0.32, tilt = 0, lanyard = false } = o;
+  const p = new T.Group(); p.position.set(x, y, z); p.rotation.y = face; parent.add(p);
+  const sm = matOnce(shirt, 0.85), pm = matOnce(pants, 0.8), km = matOnce(skin, 0.6), hm = matOnce(hair, 0.9), shoe = matOnce('#17171a', 0.4);
+  const V = (a, b, c) => new T.Vector3(a, b, c);
+
+  // hips + legs
+  mesh(p, geoOnce('pelvis', () => new T.SphereGeometry(0.14, 16, 10)), pm, 0.03, 0.08, 0, { s: [0.85, 0.6, 1.1] });
+  const footY = -seatH + 0.05;
+  for (const s of [1, -1]) {
+    const hip = V(0.02, 0.07, s * 0.085), knee = V(0.42, 0.07, s * 0.09), ankle = V(0.45, footY + 0.03, s * 0.095);
+    limb(p, hip, knee, 0.064, pm);
+    limb(p, knee, ankle, 0.052, pm);
+    mesh(p, geoOnce('shoe', () => new T.BoxGeometry(0.22, 0.07, 0.09)), shoe, ankle.x + 0.06, footY - 0.015, ankle.z);
+  }
+  // torso, collar, neck, head
+  mesh(p, geoOnce('torso', () => new T.CapsuleGeometry(0.14, 0.24, 6, 16)), sm, 0, 0.37, 0, { s: [0.72, 1, 1.06] });
+  mesh(p, geoOnce('collar', () => new T.TorusGeometry(0.055, 0.016, 6, 16)), sm, 0, 0.62, 0, { r: [Math.PI / 2, 0, 0] });
+  if (lanyard) {
+    const lm = matOnce('#8a1c2b', 0.7);
+    for (const s of [1, -1]) limb(p, V(0.02, 0.62, s * 0.05), V(0.1, 0.42, s * 0.01), 0.006, lm);
+    mesh(p, geoOnce('idcard', () => new T.BoxGeometry(0.006, 0.075, 0.055)), matOnce('#ffffff', 0.5), 0.108, 0.38, 0);
+  }
+  mesh(p, geoOnce('neck', () => new T.CylinderGeometry(0.04, 0.047, 0.1, 12)), km, 0, 0.67, 0);
+  const head = new T.Group(); head.position.set(0, 0.7, 0); head.rotation.z = -tilt; p.add(head);   // pivots at the neck
+  mesh(head, geoOnce('head', () => new T.SphereGeometry(0.1, 20, 14)), km, 0.01, 0.11, 0, { s: [1, 1.12, 0.92] });
+  mesh(head, geoOnce('hair', () => new T.SphereGeometry(0.107, 20, 10, 0, Math.PI * 2, 0, Math.PI * 0.55)), hm, -0.008, 0.13, 0, { s: [1, 1.05, 0.95] });
+  mesh(head, geoOnce('fringe', () => new T.SphereGeometry(0.09, 14, 10)), hm, -0.035, 0.1, 0, { s: [0.8, 1.05, 1.02] });
+  // arms: shoulder → elbow → hand
+  for (const s of [1, -1]) {
+    const sh = V(0, 0.56, s * 0.16);
+    const [el, hd] = hands === 'desk' ? [V(0.16, deskY + 0.05, s * 0.2), V(0.44, deskY + 0.03, s * 0.11)]
+      : hands === 'wheel' ? [V(0.18, 0.36, s * 0.2), V(0.4, 0.46, s * 0.13)]
+        : [V(0.08, 0.3, s * 0.19), V(0.3, 0.17, s * 0.1)];
+    mesh(p, geoOnce('shoulder', () => new T.SphereGeometry(0.055, 12, 10)), sm, sh.x, sh.y, sh.z);
+    limb(p, sh, V(sh.x + (el.x - sh.x) * 0.45, sh.y + (el.y - sh.y) * 0.45, sh.z + (el.z - sh.z) * 0.45), 0.052, sm);   // short sleeve
+    limb(p, sh, el, 0.04, km);
+    limb(p, el, hd, 0.035, km);
+    mesh(p, geoOnce('hand', () => new T.SphereGeometry(0.04, 10, 8)), km, hd.x + 0.02, hd.y, hd.z, { s: [1.2, 0.7, 0.9] });
+  }
+  return p;
+}

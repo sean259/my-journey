@@ -1,5 +1,5 @@
 import * as T from 'three';
-import { MAROON, GOLD, rnd, mat, mesh, box, canvasTex, roundedBox, label, glowTexture, skyDome, materials, tree, palm, plant, windowPane, house } from './helpers.js';
+import { MAROON, GOLD, rnd, mat, mesh, box, canvasTex, roundedBox, label, glowTexture, skyDome, materials, tree, palm, plant, windowPane, house, seatedPerson } from './helpers.js';
 
 /* ==========================================================
    THE STREET — walk from home (x≈0) to CIT-U's door (x = DOOR_X)
@@ -125,18 +125,9 @@ export function buildStreet() {
   for (let i = 0; i < poleXs.length - 1; i++) for (const dz of [-0.6, 0, 0.6]) mesh(scene, wireGeo(poleXs[i], poleXs[i + 1], 8.35, 1.55 + dz * 0.2), m.wire, 0, 0, 0, { receive: false });
 
   // JEEPNEYS — the one Sean rides, plus one parked in a lot
-  function passenger(parent, x, z, face, shirt, hair = '#1d140e', skin = '#c98d6a') {
-    const p = new T.Group(); p.position.set(x, 1.3, z); p.rotation.y = face; parent.add(p);
-    const sm = mat(shirt, 0.8), km = mat(skin, 0.6), pm = mat('#2b2f3f', 0.8);
-    mesh(p, new T.CapsuleGeometry(0.13, 0.26, 6, 14), sm, 0, 0.3, 0, { s: [0.75, 1, 1] });
-    mesh(p, new T.CylinderGeometry(0.045, 0.05, 0.08, 10), km, 0, 0.55, 0);
-    mesh(p, new T.SphereGeometry(0.1, 18, 14), km, 0.01, 0.68, 0, { s: [1, 1.1, 0.92] });
-    mesh(p, new T.SphereGeometry(0.106, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), mat(hair, 0.9), -0.012, 0.7, 0);
-    box(p, 0.42, 0.13, 0.26, pm, 0.2, 0.02, 0);
-    box(p, 0.12, 0.42, 0.24, pm, 0.38, -0.2, 0);
-    for (const zz of [-0.17, 0.17]) mesh(p, new T.CapsuleGeometry(0.04, 0.26, 4, 8), sm, 0.08, 0.28, zz, { r: [0, 0, -0.6] });
-    return p;
-  }
+  // bench tops are at y 1.27, the floor at 0.84 → seat height 0.43
+  const passenger = (parent, x, z, face, shirt, hair = '#1d140e', skin = '#c98d6a', hands = 'lap') =>
+    seatedPerson(parent, x, 1.27, z, { face, shirt, pants: '#2b2f3f', hair, skin, seatH: 0.43, hands, tilt: 0.05 });
   function makeJeep(o = {}) {
     const jeep = new T.Group();
     const body = new T.Group(); jeep.add(body);
@@ -179,7 +170,11 @@ export function buildStreet() {
       passenger(body, 0.3, -0.62, -Math.PI / 2, '#e9a23b');
       passenger(body, 1.45, -0.62, -Math.PI / 2, '#5b8bd9', '#2a1a10', '#b97a55');
       passenger(body, -0.2, 0.62, Math.PI / 2, '#d9d4c8');
-      passenger(body, 2.35, -0.42, 0, '#3a6b4a', '#111', '#a86b48');   // driver
+      passenger(body, 2.25, -0.42, 0, '#3a6b4a', '#111', '#a86b48', 'wheel');   // driver
+      box(body, 0.42, 0.1, 0.46, seatM, 2.3, 1.22, -0.42);   // driver's seat
+      const wheel = mesh(body, new T.TorusGeometry(0.16, 0.018, 8, 24), dark, 2.68, 1.74, -0.42);   // steering wheel, top tipped toward the driver
+      wheel.rotation.order = 'ZYX'; wheel.rotation.set(0, Math.PI / 2, 0.45);
+      mesh(body, new T.CylinderGeometry(0.02, 0.02, 0.4, 8), dark, 2.77, 1.56, -0.42, { r: [0, 0, 0.45] });   // column
     }
     return { group: jeep, body, wheels };
   }

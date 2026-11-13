@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { buildRoom, buildStreet, buildCorridor, buildClassroom } from '../three/world/index.js';
 import { Sean3D } from '../three/sean.js';
 import { W } from './state.js';
+import { isMobile } from '../config.js';
 import posterUrl from '../assets/profile.jpg';
 
 // resolves to null instead of failing if the image is missing or would taint WebGL
@@ -50,6 +51,9 @@ export async function buildWorlds(renderer, camera) {
   W.sean = Sean3D.create(); W.sean.root.position.set(-4, 0, -3.9); W.street.scene.add(W.sean.root);
   W.seanClass = Sean3D.create(); W.classroom.scene.add(W.seanClass.root);
   W.seanCorr = Sean3D.create(); W.corridor.scene.add(W.seanCorr.root);
+
+  // phones: smaller shadow maps
+  if (isMobile()) for (const w of [W.room, W.street, W.classroom, W.corridor]) w.scene.traverse((o) => { if (o.isLight && o.castShadow && o.shadow.mapSize.x > 1024) o.shadow.mapSize.set(1024, 1024); });
 
   const pmrem = new THREE.PMREMGenerator(renderer);
   W.street.scene.environment = gradientEnv(pmrem, '#7fa6d8', '#f3d6bf', '#5a4c3e', 0.3);
