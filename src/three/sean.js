@@ -69,11 +69,11 @@ function roundedBox(w, h, d, r) {
 
 function create() {
   const M = {
-    skin: mat('#d9a07a', 0.55), shirt: mat('#f2f2ec', 0.85), shirtShade: mat('#e2e2da', 0.9),
-    pants: mat('#262a40', 0.78), shoe: mat('#141416', 0.32, 0.1), sole: mat('#3a3a3d', 0.85),
+    skin: mat('#d9a07a', 0.55), shirt: mat('#dde1e6', 0.85), shirtShade: mat('#cdd2d8', 0.9),   // CIT-U uniform: pale grey polo
+    pants: mat('#303236', 0.78),   // charcoal slacks shoe: mat('#141416', 0.32, 0.1), sole: mat('#3a3a3d', 0.85),
     hair: mat('#3d2313', 0.92), lens: mat('#ff8a1e', 0.1, 0.55, { emissive: new T.Color('#ff5a00'), emissiveIntensity: 0.22 }),
     frame: mat('#1b1b1d', 0.3, 0.6), lany: mat('#8a1c2b', 0.7), card: mat('#ffffff', 0.5), gold: mat('#f4c542', 0.4, 0.3),
-    bag: mat('#2f5d9e', 0.62), bagDark: mat('#1f416f', 0.7), belt: mat('#2b211b', 0.6), buckle: mat('#c9b37a', 0.3, 0.8),
+    bag: mat('#2f5d9e', 0.62), bagDark: mat('#1f416f', 0.7),
     mouth: mat('#9a5a48', 0.6), button: mat('#d4d4cc', 0.5)
   };
   const add = (parent, geo, m, x = 0, y = 0, z = 0, opts = {}) => {
@@ -111,12 +111,24 @@ function create() {
 
   const torso = new T.Group(); pelvis.add(torso);
   add(torso, new T.CapsuleGeometry(0.17, 0.2, 10, 28), M.shirt, 0, 0.27, 0, { s: [0.72, 1, 1.12] });
-  add(torso, new T.CylinderGeometry(0.128, 0.128, 0.05, 28), M.belt, 0, 0.03, 0, { s: [0.97, 1, 1.5] });
-  add(torso, new T.BoxGeometry(0.012, 0.04, 0.05), M.buckle, 0.124, 0.03, 0);
+  // untucked hem covers the waistband
+  add(torso, new T.CylinderGeometry(0.13, 0.136, 0.1, 28), M.shirt, 0, 0.03, 0, { s: [0.97, 1, 1.47] });
   add(torso, new T.TorusGeometry(0.068, 0.02, 10, 28), M.shirtShade, 0, 0.5, 0, { r: [Math.PI / 2, 0, 0] });
   add(torso, new T.BoxGeometry(0.06, 0.012, 0.05), M.shirt, 0.07, 0.49, 0.03, { r: [0, -0.4, -0.5] });
   add(torso, new T.BoxGeometry(0.06, 0.012, 0.05), M.shirt, 0.07, 0.49, -0.03, { r: [0, 0.4, -0.5] });
-  for (const y of [0.43, 0.37]) add(torso, new T.SphereGeometry(0.008, 8, 6), M.button, 0.124, y, 0);
+  for (const y of [0.43, 0.37, 0.31, 0.25, 0.19]) add(torso, new T.SphereGeometry(0.007, 8, 6), M.button, 0.124, y, 0);
+  add(torso, new T.BoxGeometry(0.004, 0.23, 0.026), M.shirtShade, 0.121, 0.285, 0);   // button placket
+  add(torso, new T.CylinderGeometry(0.009, 0.009, 0.004, 14), M.gold, 0.082, 0.478, -0.05, { r: [0, 0, Math.PI / 2] });   // collar pin
+  // left chest pocket with the maroon-and-gold welt
+  add(torso, new T.PlaneGeometry(0.066, 0.076), new T.MeshStandardMaterial({ roughness: 0.85, map: (() => {
+    const c = document.createElement('canvas'); c.width = 132; c.height = 152; const g = c.getContext('2d');
+    g.fillStyle = '#dde1e6'; g.fillRect(0, 0, 132, 152);
+    g.strokeStyle = '#b9bec6'; g.lineWidth = 3; g.setLineDash([6, 4]); g.strokeRect(5, 5, 122, 142);
+    g.fillStyle = '#f4c21f'; g.fillRect(4, 10, 124, 26);
+    g.fillStyle = '#7d1526'; g.fillRect(4, 4, 124, 8);
+    g.beginPath(); g.moveTo(36, 10); g.lineTo(96, 10); g.lineTo(66, 34); g.closePath(); g.fill();
+    const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; return t;
+  })() }), 0.118, 0.345, -0.066, { r: [0, Math.PI / 2 + 0.23, 0] });
   // CIT-U lanyard + ID
   tube(torso, [[0.0, 0.52, 0.075], [0.07, 0.46, 0.065], [0.118, 0.36, 0.025], [0.126, 0.3, 0.004]], 0.006, M.lany);
   tube(torso, [[0.0, 0.52, -0.075], [0.07, 0.46, -0.065], [0.118, 0.36, -0.025], [0.126, 0.3, -0.004]], 0.006, M.lany);
